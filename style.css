@@ -102,14 +102,19 @@ h2{ font-size: clamp(28px, 3.2vw, 40px); letter-spacing:.02em }
   width:22px; height:2px; background:var(--fg); margin:4px 0;
 }
 
-/* 移动抽屉 */
-.drawer{
-  position:fixed; top:64px; right:0; left:0;
-  background:#0a0a0a; border-top:1px solid var(--line);
-  display:hidden; flex-direction:column; gap:.75rem;
-  padding:1rem 1.25rem; z-index:900;
+/* 移动抽屉：直接禁用（或删除 HTML 也行） */
+.drawer{ display:none !important; }
+
+/* 小屏也始终显示一排导航，隐藏汉堡按钮 */
+@media (max-width: 900px){
+  .nav__links{
+    display:flex;            /* 不再隐藏 */
+    gap:1.25rem;
+    overflow-x:auto;         /* 链接多时可横向滚动，避免换行挤爆 */
+    -webkit-overflow-scrolling: touch;
+  }
+  .nav__burger{ display:none }  /* 不再显示按钮 */
 }
-.drawer a{ color:var(--fg); text-decoration:none }
 
 /* 英雄区（全屏视频） */
 .hero{
