@@ -109,8 +109,25 @@ h2{ font-size: clamp(28px, 3.2vw, 40px); letter-spacing:.02em }
   position:fixed; top:64px; right:0; left:0;
   background:#0a0a0a; border-top:1px solid var(--line);
   display:flex; flex-direction:column; gap:.75rem;
-  padding:1rem 1.25rem; z-index:900;
+  padding:0 1.25rem;                 /* ✏️修改：初始关闭时先不撑开高度，所以把上下内边距移到 .open */
+  z-index:900;
+
+  /* ✨新增：动画所需的初始关闭状态 */
+  max-height:0;
+  opacity:0;
+  overflow:hidden;
+  transform:translateY(-10px);
+  transition:max-height .3s ease, opacity .25s ease, transform .25s ease, padding .2s ease;
+  will-change:max-height, opacity, transform;
 }
+/* ✨新增：打开状态（有内边距 & 平滑下拉） */
+.drawer.open{
+  max-height:500px;        /* 估算一个足够大的值，能容纳你的菜单 */
+  opacity:1;
+  transform:translateY(0);
+  padding:1rem 1.25rem;    /* 还原上下内边距，过渡更自然 */
+}
+
 .drawer a{ color:var(--fg); text-decoration:none }
 
 /* 英雄区（全屏视频） */
