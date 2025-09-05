@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>营地官网｜Making Life Multiplanetary（?）</title>
+  <title>营地官网｜Camp</title>
   <meta name="description" content="明日之后营地官方网站。新闻、活动、战术手册、成员与招募。">
   <meta name="color-scheme" content="dark light" />
   <link rel="preload" href="assets/video.mp4" as="video" type="video/mp4">
@@ -16,7 +16,6 @@
     <div class="nav__inner">
       <a class="nav__brand" href="#top" aria-label="营地首页">CAMP</a>
       <nav class="nav__links" aria-label="主导航">
-        <!-- 先随便弄一些功能名，后期你改就行 -->
         <a href="#news">新闻</a>
         <a href="#members">成员</a>
         <a href="#events">活动</a>
@@ -29,6 +28,7 @@
         <div></div><div></div><div></div>
       </button>
     </div>
+    <!-- 抽屉菜单：移动端可见，默认隐藏 -->
     <div id="drawer" class="drawer" hidden>
       <a href="#news">新闻</a>
       <a href="#members">成员</a>
@@ -53,28 +53,23 @@
       >
         <source src="assets/video.webm" type="video/webm">
         <source src="assets/video.mp4" type="video/mp4">
-        <!-- 浏览器不支持视频的兜底文案 -->
         您的浏览器不支持 HTML5 视频。
       </video>
 
-      <!-- 深色渐变遮罩提升可读性 -->
       <div class="hero__scrim" aria-hidden="true"></div>
 
-      <!-- 文案 -->
       <div class="hero__content">
         <h1 class="hero__title">MAKING LIFE MULTIPLANETARY</h1>
         <p class="hero__subtitle">
-          我们的营地致力于探索末日世界的每一种可能：情报、合作、行动与创新。
-          加入我们，一起打造下一个传奇。
+          我们的营地致力于探索末日世界的每一种可能：情报、合作、行动与创新。加入我们，一起打造下一个传奇。
         </p>
         <a class="btn btn--primary" href="#recruit">
-          进入营地
-          <span class="btn__arrow" aria-hidden="true">→</span>
+          进入营地 <span class="btn__arrow" aria-hidden="true">→</span>
         </a>
       </div>
     </section>
 
-    <!-- 下面是占位分区，后续你自己填内容即可 -->
+    <!-- 占位分区，后续自行填充 -->
     <section id="news" class="section">
       <div class="container">
         <h2>新闻</h2>
