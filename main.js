@@ -13,20 +13,41 @@ window.addEventListener('scroll', onScroll, { passive: true });
 // 移动端抽屉菜单
 const burger = document.getElementById('burger');
 const drawer = document.getElementById('drawer');
+// ✅ 统一用函数切换 hidden/aria
+function setDrawer(open){
+  if (!drawer || !burger) return;
+  burger.setAttribute('aria-expanded', String(open));
+  drawer.hidden = !open;
+}
+
+// 初始：移动端关闭，桌面端确保关闭
+setDrawer(false);
+
 if (burger && drawer) {
   burger.addEventListener('click', () => {
     const open = burger.getAttribute('aria-expanded') === 'true';
-    burger.setAttribute('aria-expanded', String(!open));
-    drawer.hidden = open;
+    setDrawer(!open);
   });
   // 点击链接关闭
   drawer.querySelectorAll('a').forEach(a =>
-    a.addEventListener('click', () => {
-      burger.setAttribute('aria-expanded', 'false');
-      drawer.hidden = true;
-    })
+    a.addEventListener('click', () => setDrawer(false))
   );
 }
+
+// ✅ 视口变化守卫：切到桌面强制关闭；回到移动端保持关闭初始态
+const MQ = window.matchMedia('(min-width: 901px)');
+function handleViewportChange(){
+  if (MQ.matches){
+    // 桌面：保证抽屉关闭
+    setDrawer(false);
+  } else {
+    // 移动：保持默认关闭（不强制打开，避免“刷新即展开”）
+    drawer && (drawer.hidden = true);
+    burger && burger.setAttribute('aria-expanded', 'false');
+  }
+}
+handleViewportChange();
+MQ.addEventListener?.('change', handleViewportChange);
 
 // 背景视频策略：若用户偏好减少动态，则暂停；否则尝试播放
 const video = document.getElementById('bg-video');
