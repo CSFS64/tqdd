@@ -45,8 +45,7 @@ function handleViewportChange(){
     setDrawer(false);
   } else {
     // 移动：保持默认关闭（不强制打开，避免“刷新即展开”）
-    drawer && (drawer.hidden = true);
-    burger && burger.setAttribute('aria-expanded', 'false');
+    setDrawer(false);
   }
 }
 handleViewportChange();
