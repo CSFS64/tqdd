@@ -1,1 +1,184 @@
+/* 基础：SpaceX 风格——极简、黑底、细字距大标题 */
+:root{
+  --bg: #000;
+  --fg: #f5f5f5;
+  --muted: #c9c9c9;
+  --accent: #ffffff;
+  --line: rgba(255,255,255,.08);
+  --nav-bg: rgba(0,0,0,.25);
+  --nav-bg-solid: rgba(0,0,0,.7);
+  --max: 1120px;
+}
 
+*{ box-sizing: border-box }
+html,body{ height:100% }
+html{ scroll-behavior:smooth }
+body{
+  margin:0;
+  font-family: ui-sans-serif, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  line-height:1.6;
+}
+
+/* 可访问性：隐藏仅给屏幕阅读器看的文字 */
+.sr-only{
+  position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
+}
+
+/* 容器与分区 */
+.container{
+  width:min(100% - 2rem, var(--max));
+  margin-inline:auto;
+}
+
+.section{
+  padding: min(12vh, 8rem) 0;
+  border-top:1px solid var(--line);
+}
+
+h1,h2,h3{ margin:0 0 .75rem 0; line-height:1.2 }
+h2{ font-size: clamp(28px, 3.2vw, 40px); letter-spacing:.02em }
+
+/* 顶部导航 */
+.nav{
+  position:fixed;
+  inset:0 0 auto 0;
+  height:64px;
+  display:flex;
+  align-items:center;
+  z-index:1000;
+  background: var(--nav-bg);
+  backdrop-filter: blur(6px);
+  transition: background .25s ease, border-color .25s ease;
+  border-bottom:1px solid transparent;
+}
+.nav.scrolled{
+  background: var(--nav-bg-solid);
+  border-bottom-color: var(--line);
+}
+.nav__inner{
+  width:min(100% - 2rem, var(--max));
+  margin-inline:auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+}
+.nav__brand{
+  color:var(--fg);
+  font-weight:700;
+  text-decoration:none;
+  letter-spacing:.18em;
+}
+.nav__links{
+  display:flex; gap:1.25rem;
+}
+.nav__links a{
+  color:var(--fg);
+  text-decoration:none;
+  font-size:14px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  position:relative;
+  padding:.25rem 0;
+}
+.nav__links a::after{
+  content:"";
+  position:absolute; left:0; right:100%; bottom:-6px; height:2px; background:var(--fg);
+  transition:right .25s ease;
+}
+.nav__links a:hover::after,
+.nav__links a[aria-current="page"]::after{
+  right:0;
+}
+
+/* 移动抽屉按钮 */
+.nav__burger{
+  display:none;
+  background:none; border:0; padding:6px; cursor:pointer;
+}
+.nav__burger div{
+  width:22px; height:2px; background:var(--fg); margin:4px 0;
+}
+
+/* 移动抽屉 */
+.drawer{
+  position:fixed; top:64px; right:0; left:0;
+  background:#0a0a0a; border-top:1px solid var(--line);
+  display:flex; flex-direction:column; gap:.75rem;
+  padding:1rem 1.25rem; z-index:900;
+}
+.drawer a{ color:var(--fg); text-decoration:none }
+
+/* 英雄区（全屏视频） */
+.hero{
+  position:relative;
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+}
+.hero__video{
+  position:absolute; inset:0;
+  width:100%; height:100%;
+  object-fit:cover;
+  filter: saturate(1.05) contrast(1.05);
+  z-index:-2;
+}
+.hero__scrim{
+  position:absolute; inset:0;
+  background: radial-gradient(1200px 800px at 25% 50%, rgba(0,0,0,.0), rgba(0,0,0,.4) 55%, rgba(0,0,0,.7) 100%),
+              linear-gradient(180deg, rgba(0,0,0,.40), rgba(0,0,0,.65));
+  z-index:-1;
+}
+.hero__content{
+  width:min(100% - 2rem, var(--max));
+  margin-inline:auto;
+  display:grid;
+  gap:1.25rem;
+  align-self:center;
+  padding-top:64px; /* 留出导航高度 */
+}
+.hero__title{
+  font-size: clamp(32px, 6vw, 64px);
+  font-weight:800;
+  letter-spacing:.06em;
+}
+.hero__subtitle{
+  max-width: 720px;
+  color: var(--muted);
+  font-size: clamp(15px, 2vw, 18px);
+}
+
+/* 按钮（SpaceX 风的描边按钮） */
+.btn{
+  --btn-h: 46px;
+  display:inline-flex; align-items:center; gap:.5rem;
+  height:var(--btn-h);
+  padding:0 18px;
+  border:1px solid var(--fg);
+  border-radius:2px;
+  color:var(--fg); text-decoration:none; font-weight:600; letter-spacing:.08em;
+  text-transform:uppercase; font-size:13px;
+  transition: background .2s ease, transform .08s ease;
+}
+.btn:hover{ background: rgba(255,255,255,.08) }
+.btn:active{ transform: translateY(1px) }
+.btn__arrow{ transition: transform .2s ease }
+.btn:hover .btn__arrow{ transform: translateX(4px) }
+.btn--primary{ border-color:var(--accent) }
+
+/* 页脚 */
+.footer{
+  border-top:1px solid var(--line);
+  color:var(--muted);
+  padding: 2rem 0 3rem;
+}
+.footer__inner{ display:flex; justify-content:center }
+
+/* 响应式 */
+@media (max-width: 900px){
+  .nav__links{ display:none }
+  .nav__burger{ display:block }
+}
