@@ -1,1 +1,130 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>营地官网｜Making Life Multiplanetary（?）</title>
+  <meta name="description" content="明日之后营地官方网站。新闻、活动、战术手册、成员与招募。">
+  <meta name="color-scheme" content="dark light" />
+  <link rel="preload" href="assets/video.mp4" as="video" type="video/mp4">
+  <link rel="preload" href="assets/poster.jpg" as="image">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- 顶部导航 -->
+  <header class="nav" id="nav">
+    <div class="nav__inner">
+      <a class="nav__brand" href="#top" aria-label="营地首页">CAMP</a>
+      <nav class="nav__links" aria-label="主导航">
+        <!-- 先随便弄一些功能名，后期你改就行 -->
+        <a href="#news">新闻</a>
+        <a href="#members">成员</a>
+        <a href="#events">活动</a>
+        <a href="#manual">战术手册</a>
+        <a href="#recruit">招募</a>
+        <a href="#contact">联系</a>
+      </nav>
+      <button class="nav__burger" id="burger" aria-expanded="false" aria-controls="drawer">
+        <span class="sr-only">打开菜单</span>
+        <div></div><div></div><div></div>
+      </button>
+    </div>
+    <div id="drawer" class="drawer" hidden>
+      <a href="#news">新闻</a>
+      <a href="#members">成员</a>
+      <a href="#events">活动</a>
+      <a href="#manual">战术手册</a>
+      <a href="#recruit">招募</a>
+      <a href="#contact">联系</a>
+    </div>
+  </header>
 
+  <!-- 英雄区（全屏视频） -->
+  <main id="top">
+    <section class="hero" aria-label="首屏">
+      <video
+        id="bg-video"
+        class="hero__video"
+        playsinline
+        autoplay
+        muted
+        loop
+        poster="assets/poster.jpg"
+      >
+        <source src="assets/video.webm" type="video/webm">
+        <source src="assets/video.mp4" type="video/mp4">
+        <!-- 浏览器不支持视频的兜底文案 -->
+        您的浏览器不支持 HTML5 视频。
+      </video>
+
+      <!-- 深色渐变遮罩提升可读性 -->
+      <div class="hero__scrim" aria-hidden="true"></div>
+
+      <!-- 文案 -->
+      <div class="hero__content">
+        <h1 class="hero__title">MAKING LIFE MULTIPLANETARY</h1>
+        <p class="hero__subtitle">
+          我们的营地致力于探索末日世界的每一种可能：情报、合作、行动与创新。
+          加入我们，一起打造下一个传奇。
+        </p>
+        <a class="btn btn--primary" href="#recruit">
+          进入营地
+          <span class="btn__arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- 下面是占位分区，后续你自己填内容即可 -->
+    <section id="news" class="section">
+      <div class="container">
+        <h2>新闻</h2>
+        <p>这里展示你营地的最新动态、公告与战报。</p>
+      </div>
+    </section>
+
+    <section id="members" class="section">
+      <div class="container">
+        <h2>成员</h2>
+        <p>展示核心成员、管理层、分队与联系方式。</p>
+      </div>
+    </section>
+
+    <section id="events" class="section">
+      <div class="container">
+        <h2>活动</h2>
+        <p>例行行动、PVP 约战、资源运输、建筑协作等。</p>
+      </div>
+    </section>
+
+    <section id="manual" class="section">
+      <div class="container">
+        <h2>战术手册</h2>
+        <p>地图资源点、配装建议、PVP 战术与施工规范。</p>
+      </div>
+    </section>
+
+    <section id="recruit" class="section">
+      <div class="container">
+        <h2>招募</h2>
+        <p>填写申请或跳转到你们的入营表单/QQ群/Discord。</p>
+        <a class="btn" href="https://example.com/join" target="_blank" rel="noopener">填写申请</a>
+      </div>
+    </section>
+
+    <section id="contact" class="section">
+      <div class="container">
+        <h2>联系</h2>
+        <p>邮箱、QQ群、Discord、B站主页等。</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <span>© <span id="y"></span> CAMP. 非官方粉丝站，与游戏官方无关。</span>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>
