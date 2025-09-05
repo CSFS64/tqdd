@@ -13,6 +13,8 @@ window.addEventListener('scroll', onScroll, { passive: true });
 // 移动端抽屉菜单
 const burger = document.getElementById('burger');
 const drawer = document.getElementById('drawer');
+drawer?.removeAttribute('hidden');
+
 // ✅ 统一用函数切换 hidden/aria
 function setDrawer(open){
   if (!drawer || !burger) return;
