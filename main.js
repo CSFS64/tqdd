@@ -17,7 +17,8 @@ const drawer = document.getElementById('drawer');
 function setDrawer(open){
   if (!drawer || !burger) return;
   burger.setAttribute('aria-expanded', String(open));
-  drawer.hidden = !open;
+  if (open) drawer.classList.add('open');
+  else drawer.classList.remove('open');
 }
 
 // 初始：移动端关闭，桌面端确保关闭
