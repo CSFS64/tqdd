@@ -182,11 +182,6 @@ h2{ font-size: clamp(28px, 3.2vw, 40px); letter-spacing:.02em }
   text-transform:uppercase; font-size:13px;
   transition: background .2s ease, transform .08s ease;
 }
-.btn:hover{ background: rgba(255,255,255,.08) }
-.btn:active{ transform: translateY(1px) }
-.btn__arrow{ transition: transform .2s ease }
-.btn:hover .btn__arrow{ transform: translateX(4px) }
-.btn--primary{ border-color:var(--accent) }
 
 /* 修复 button 默认白底的问题 */
 button.btn {
@@ -195,6 +190,12 @@ button.btn {
   color: var(--fg);
   cursor: pointer;
 }
+
+.btn:hover{ background: rgba(255,255,255,.08) }
+.btn:active{ transform: translateY(1px) }
+.btn__arrow{ transition: transform .2s ease }
+.btn:hover .btn__arrow{ transform: translateX(4px) }
+.btn--primary{ border-color:var(--accent) }
 
 /* 页脚 */
 .footer{
