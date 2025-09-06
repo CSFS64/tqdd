@@ -241,6 +241,108 @@ dialog.modal[open]{ display: block; }
 }
 .modal::backdrop{ background: rgba(0,0,0,.55); } /* 原生 dialog 的遮罩 */
 
+/* 优化表单外观 */
+#matchDialog {
+  background-color: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  width: 80%;
+  max-width: 500px;
+  margin: 0 auto;
+  font-size: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  display: none; /* 默认隐藏 */
+}
+
+#matchDialog.open {
+  display: block;
+}
+
+#matchDialog h3 {
+  font-size: 24px;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+#matchForm input,
+#matchForm select,
+#matchForm textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #444;
+  border-radius: 4px;
+  background-color: #333;
+  color: #fff;
+  font-size: 16px;
+}
+
+#matchForm textarea {
+  resize: vertical;
+}
+
+.muted {
+  color: #c9c9c9;
+  font-size: 14px;
+}
+
+button {
+  padding: 12px 24px;
+  border: none;
+  color: white;
+  background-color: #0056b3;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #00408a;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+#closeMatch {
+  background-color: #555;
+}
+
+#closeMatch:hover {
+  background-color: #444;
+}
+
+.modal__actions {
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* 使按钮看起来更整洁 */
+#matchBtn {
+  background-color: #28a745;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 4px;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#matchBtn:hover {
+  background-color: #218838;
+}
+
+/* 适配移动端 */
+@media (max-width: 600px) {
+  #matchDialog {
+    width: 90%;
+  }
+}
+
 /* 响应式 */
 @media (max-width: 900px){
   .nav__links{ display:none }
