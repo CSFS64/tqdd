@@ -205,6 +205,42 @@ button.btn {
 }
 .footer__inner{ display:flex; justify-content:center }
 
+/* 默认隐藏，dialog 打开时浏览器会加 [open] */
+.modal{ display: none; }
+
+/* 原生 <dialog> 打开 */
+dialog.modal[open]{ display: block; }
+
+/* 非 dialog 降级：用 is-open 控制展示 */
+.modal.is-open{ 
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 1001;
+}
+
+/* 降级模式伪“遮罩” */
+.modal.is-open::before{
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  z-index: -1;
+}
+
+/* 你原有的弹窗外观保持不变 */
+.modal{
+  width:min(100% - 2rem, 560px);
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#0a0a0a;
+  color:var(--fg);
+  padding:1rem;
+  margin:auto;                 /* 居中 */
+  top: 10%;                    /* 轻微下移 */
+}
+.modal::backdrop{ background: rgba(0,0,0,.55); } /* 原生 dialog 的遮罩 */
+
 /* 响应式 */
 @media (max-width: 900px){
   .nav__links{ display:none }
