@@ -105,6 +105,37 @@
       <div class="container">
         <h2>偷情（寻找同居）</h2>
         <p>暂时无法偷情，下次再来吧。</p>
+        <button class="btn" id="matchBtn" type="button">填写同居要求</button>
+
+        <dialog id="matchDialog" class="modal">
+          <form id="matchForm">
+            <h3 style="margin:0 0 .75rem 0;">寻找同居</h3>
+        
+            <input name="nickname" placeholder="游戏昵称" required>
+            <input name="contact" placeholder="联系方式（QQ/微信）" required>
+        
+            <label class="muted">可用时段（逗号分隔）：weekday,weekend,morning,afternoon,evening,night</label>
+            <input name="slots" placeholder="weekday,evening">
+        
+            <label class="muted">玩法（逗号分隔）：pvp,pve,build,trade,explore</label>
+            <input name="modes" placeholder="pve,build">
+        
+            <label class="muted">是否语音</label>
+            <select name="voice">
+              <option value="yes">接受语音</option>
+              <option value="no">不语音</option>
+            </select>
+        
+            <textarea name="note" rows="4" placeholder="其他要求 / 自我介绍（可选）"></textarea>
+        
+            <div class="modal__actions">
+              <button class="btn btn--primary" type="submit">提交并匹配</button>
+              <button class="btn" type="button" id="closeMatch">取消</button>
+            </div>
+        
+            <p id="matchMsg" class="muted" hidden style="margin:.5rem 0 0 0;"></p>
+          </form>
+        </dialog>
       </div>
     </section>
 
