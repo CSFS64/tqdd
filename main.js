@@ -88,3 +88,13 @@ if ('IntersectionObserver' in window && links.length) {
   }, { rootMargin: '-40% 0px -55% 0px', threshold: [0, 1] });
   sections.forEach(sec => io.observe(sec));
 }
+
+document.addEventListener('WeixinJSBridgeReady', () => {
+  const video = document.getElementById('bg-video');
+  if (video) video.play().catch(() => {});
+});
+
+document.addEventListener('click', () => {
+  const video = document.getElementById('bg-video');
+  if (video && video.paused) video.play().catch(() => {});
+}, { once: true });
