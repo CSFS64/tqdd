@@ -188,6 +188,14 @@ h2{ font-size: clamp(28px, 3.2vw, 40px); letter-spacing:.02em }
 .btn:hover .btn__arrow{ transform: translateX(4px) }
 .btn--primary{ border-color:var(--accent) }
 
+/* 修复 button 默认白底的问题 */
+button.btn {
+  background: none;
+  border: 1px solid var(--fg);
+  color: var(--fg);
+  cursor: pointer;
+}
+
 /* 页脚 */
 .footer{
   border-top:1px solid var(--line);
