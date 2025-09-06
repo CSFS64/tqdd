@@ -98,3 +98,54 @@ document.addEventListener('click', () => {
   const video = document.getElementById('bg-video');
   if (video && video.paused) video.play().catch(() => {});
 }, { once: true });
+
+// —— 同居匹配：弹窗 + 提交 ——
+const matchBtn = document.getElementById('matchBtn');
+const matchDialog = document.getElementById('matchDialog');
+const matchForm = document.getElementById('matchForm');
+const matchMsg = document.getElementById('matchMsg');
+const closeMatch = document.getElementById('closeMatch');
+
+matchBtn?.addEventListener('click', () => matchDialog.showModal());
+closeMatch?.addEventListener('click', () => matchDialog.close());
+// 点击遮罩关闭
+matchDialog?.addEventListener('click', (e) => { if (e.target === matchDialog) matchDialog.close(); });
+
+// 你的 Worker 接口（示例）：
+const ENDPOINT = 'https://tqdd-match.20060303jjc.workers.dev/submit';
+
+matchForm?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  matchMsg.hidden = true;
+
+  // 收集数据（和 Worker 的字段一致）
+  const data = Object.fromEntries(new FormData(matchForm).entries());
+  // 统一清洗：去掉多余空格
+  for (const k in data) if (typeof data[k] === 'string') data[k] = data[k].trim();
+
+  try {
+    const res = await fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    const json = await res.json();
+
+    if (json.ok) {
+      if (json.match) {
+        matchMsg.innerHTML =
+          `已提交！<br>匹配到 <strong>${json.match.nickname}</strong>（分数 ${json.match.score}/10）。<br>` +
+          `联系方式：<strong>${json.match.contact}</strong>`;
+      } else {
+        matchMsg.textContent = '已提交！暂未找到高匹配度对象，有新申请加入时再来看看～';
+      }
+    } else {
+      matchMsg.textContent = '提交失败，请稍后重试或加群联系：1058848870';
+    }
+    matchMsg.hidden = false;
+  } catch (err) {
+    matchMsg.textContent = '网络异常，稍后再试或加群联系：1058848870';
+    matchMsg.hidden = false;
+  }
+});
+
