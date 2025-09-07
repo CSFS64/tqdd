@@ -209,3 +209,18 @@ setInterval(updateCountdowns, 1000);
 
 // 页面加载时立即执行一次
 updateCountdowns();
+
+document.querySelectorAll('.event__toggle-description').forEach(button => {
+  button.addEventListener('click', function() {
+    const eventDescription = this.closest('.event').querySelector('.event__description');
+    const isExpanded = eventDescription.style.maxHeight !== '0px'; // 检查是否已经展开
+    
+    if (isExpanded) {
+      eventDescription.style.maxHeight = '0'; // 收起
+      this.textContent = '展开介绍'; // 改变按钮文本为“展开介绍”
+    } else {
+      eventDescription.style.maxHeight = eventDescription.scrollHeight + 'px'; // 展开
+      this.textContent = '收起介绍'; // 改变按钮文本为“收起介绍”
+    }
+  });
+});
