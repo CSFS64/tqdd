@@ -360,3 +360,32 @@ dialog.modal[open] {
   color: #ff5c5c;
   font-weight: bold;
 }
+
+/* 隐藏活动描述 */
+.event__description {
+  display: block; /* 始终显示，但默认设置高度为0 */
+  max-height: 0; /* 默认高度为0 */
+  overflow: hidden; /* 隐藏溢出的内容 */
+  transition: max-height 0.5s ease-out; /* 动画效果，平滑展开 */
+  margin-top: 1rem;
+  font-size: 1rem;
+  color: #ddd;
+  line-height: 1.6;
+}
+
+/* 展开按钮样式 */
+.event__toggle-description {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 1rem;
+  margin-top: 1rem;
+}
+
+.event__toggle-description:hover {
+  background-color: #0056b3;
+}
+
