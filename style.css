@@ -206,13 +206,17 @@ button.btn {
 .footer__inner{ display:flex; justify-content:center }
 
 /* 默认隐藏，dialog 打开时浏览器会加 [open] */
-.modal{ display: none; }
+.modal { 
+  display: none; 
+}
 
 /* 原生 <dialog> 打开 */
-dialog.modal[open]{ display: block; }
+dialog.modal[open] { 
+  display: block; 
+}
 
 /* 非 dialog 降级：用 is-open 控制展示 */
-.modal.is-open{ 
+.modal.is-open { 
   display: block;
   position: fixed;
   inset: 0;
@@ -220,26 +224,30 @@ dialog.modal[open]{ display: block; }
 }
 
 /* 降级模式伪“遮罩” */
-.modal.is-open::before{
+.modal.is-open::before {
   content: "";
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,.55);
-  z-index: -1;
+  background: rgba(0, 0, 0, .55);
+  z-index: 1000;
 }
 
-/* 你原有的弹窗外观保持不变 */
-.modal{
-  width:min(100% - 2rem, 560px);
-  border:1px solid var(--line);
-  border-radius:10px;
-  background:#0a0a0a;
-  color:var(--fg);
-  padding:1rem;
-  margin:auto;                 /* 居中 */
-  top: 10%;                    /* 轻微下移 */
+/* 弹窗外观 */
+.modal {
+  width: min(100% - 2rem, 560px);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #0a0a0a;
+  color: var(--fg);
+  padding: 1rem;
+  margin: auto; /* 居中 */
+  top: 10%; /* 轻微下移 */
 }
-.modal::backdrop{ background: rgba(0,0,0,.55); } /* 原生 dialog 的遮罩 */
+
+/* 原生 dialog 的遮罩 */
+.modal::backdrop { 
+  background: rgba(0, 0, 0, .55); 
+}
 
 /* 让表单中的所有输入框排列成一列 */
 #matchForm {
@@ -250,6 +258,14 @@ dialog.modal[open]{ display: block; }
   max-width: 500px; /* 限制宽度 */
 }
 
+/* 每个标签和输入框之间有间隔 */
+#matchForm label {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  color: #fff;
+}
+
+/* 调整表单字段 */
 #matchForm input, 
 #matchForm select, 
 #matchForm textarea {
@@ -259,15 +275,12 @@ dialog.modal[open]{ display: block; }
   border: 1px solid #ccc;
 }
 
+/* 让 textarea 自适应高度 */
 #matchForm textarea {
   resize: vertical;
 }
 
-#matchForm label {
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
-}
-
+/* 禁用或无效状态时 */
 #matchForm .muted {
   color: #999;
 }
