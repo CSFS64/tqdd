@@ -241,6 +241,43 @@ dialog.modal[open]{ display: block; }
 }
 .modal::backdrop{ background: rgba(0,0,0,.55); } /* 原生 dialog 的遮罩 */
 
+/* 让表单中的所有输入框排列成一列 */
+#matchForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* 间隔 */
+  width: 100%;
+  max-width: 500px; /* 限制宽度 */
+}
+
+#matchForm input, 
+#matchForm select, 
+#matchForm textarea {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+#matchForm textarea {
+  resize: vertical;
+}
+
+#matchForm label {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+#matchForm .muted {
+  color: #999;
+}
+
+.modal__actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
 /* 响应式 */
 @media (max-width: 900px){
   .nav__links{ display:none }
