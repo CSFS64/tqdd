@@ -111,11 +111,16 @@
           <form id="matchForm">
             <h3 style="margin:0 0 .75rem 0;">寻找同居</h3>
     
+            <!-- 游戏昵称 -->
+            <label for="nickname">游戏昵称</label>
             <input name="nickname" placeholder="游戏昵称" required>
     
+            <!-- 联系方式 -->
+            <label for="contact">联系方式（QQ/微信）</label>
             <input name="contact" placeholder="联系方式（QQ/微信）" required>
     
-            <label class="muted">可用时段（选择多个）</label>
+            <!-- 可用时段（选择多个） -->
+            <label for="slots">可用时段（选择多个）</label>
             <select name="slots" multiple required>
               <option value="morning">早晨</option>
               <option value="afternoon">下午</option>
@@ -125,7 +130,8 @@
               <option value="weekend">周末</option>
             </select>
     
-            <label class="muted">玩法（选择多个）</label>
+            <!-- 玩法（选择多个） -->
+            <label for="modes">玩法（选择多个）</label>
             <select name="modes" multiple required>
               <option value="pvp">PvP</option>
               <option value="pve">PvE</option>
@@ -134,13 +140,15 @@
               <option value="explore">探索</option>
             </select>
     
-            <label class="muted">是否语音</label>
+            <!-- 是否语音 -->
+            <label for="voice">是否语音</label>
             <select name="voice">
               <option value="yes">接受语音</option>
               <option value="no">不语音</option>
             </select>
     
-            <label class="muted">性别</label>
+            <!-- 性别 -->
+            <label for="gender">性别</label>
             <select name="gender" required>
               <option value="male">男</option>
               <option value="female">女</option>
@@ -150,8 +158,11 @@
               <option value="other">其他</option>
             </select>
     
+            <!-- 其他要求 / 自我介绍 -->
+            <label for="note">其他要求 / 自我介绍（可选）</label>
             <textarea name="note" rows="4" placeholder="其他要求 / 自我介绍（可选）"></textarea>
     
+            <!-- 提交和取消按钮 -->
             <div class="modal__actions">
               <button class="btn btn--primary" type="submit">提交并匹配</button>
               <button class="btn" type="button" id="closeMatch">取消</button>
