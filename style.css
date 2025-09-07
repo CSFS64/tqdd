@@ -361,3 +361,27 @@ dialog.modal[open] {
   font-weight: bold;
 }
 
+/* 隐藏活动描述 */
+.event__description {
+  display: none; /* 默认隐藏活动描述 */
+  margin-top: 1rem;
+  font-size: 1rem;
+  color: #ddd;
+  line-height: 1.6;
+}
+
+/* 展开按钮样式 */
+.event__toggle-description {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 1rem;
+  margin-top: 1rem;
+}
+
+.event__toggle-description:hover {
+  background-color: #0056b3;
+}
