@@ -300,3 +300,64 @@ dialog.modal[open] {
 @media (min-width: 901px){
   .drawer{ display:none !important; }
 }
+
+/* 活动容器 */
+#events .container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* 每个活动的布局 */
+.event {
+  display: flex;
+  align-items: center;
+  background-color: #121212;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #444;
+}
+
+/* 活动图片 */
+.event__image {
+  flex: 0 0 200px; /* 固定宽度 */
+  margin-right: 2rem;
+}
+
+.event__image img {
+  width: 100%;
+  border-radius: 8px;
+}
+
+/* 活动详细信息 */
+.event__details {
+  flex: 1;
+  color: #fff;
+}
+
+/* 活动标题 */
+.event__details h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #ffdd57; /* 高亮颜色 */
+}
+
+/* 倒计时和开始时间 */
+.event__time, .event__start-time {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* 活动描述 */
+.event__description {
+  font-size: 1rem;
+  color: #ddd;
+  line-height: 1.6;
+}
+
+/* 改变倒计时文本颜色 */
+#countdown {
+  color: #ff5c5c;
+  font-weight: bold;
+}
+
