@@ -361,13 +361,18 @@ dialog.modal[open] {
   font-weight: bold;
 }
 
-/* 隐藏活动描述 */
+/* 默认隐藏活动描述 */
 .event__description {
-  display: none; /* 默认隐藏活动描述 */
+  display: none;
   margin-top: 1rem;
   font-size: 1rem;
   color: #ddd;
   line-height: 1.6;
+}
+
+/* 通过添加 .show 类来显示活动描述 */
+.event__description.show {
+  display: block;
 }
 
 /* 展开按钮样式 */
@@ -385,3 +390,4 @@ dialog.modal[open] {
 .event__toggle-description:hover {
   background-color: #0056b3;
 }
+
