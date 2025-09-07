@@ -169,3 +169,38 @@ matchForm?.addEventListener('submit', async (e) => {
   matchMsg.hidden = false;
 });
 
+// 更新倒计时，计算剩余时间并根据活动类型更新
+function updateCountdowns() {
+  const events = document.querySelectorAll('.event');
+  events.forEach(event => {
+    const countdownElement = event.querySelector('.countdown');
+    const startTime = new Date(event.getAttribute('data-start-time')).getTime();
+    const repeat = event.getAttribute('data-repeat') === 'true';
+
+    // 当前时间
+    const now = new Date().getTime();
+    let timeRemaining = startTime - now;
+
+    if (timeRemaining < 0) {
+      if (repeat) {
+        // 如果活动是每天重复，则重新计算倒计时
+        const oneDay = 24 * 60 * 60 * 1000;  // 一天的毫秒数
+        timeRemaining = oneDay - (now % oneDay); // 从当前时间开始的下一天
+      } else {
+        timeRemaining = 0; // 如果活动不是重复的，倒计时归零
+      }
+    }
+
+    // 计算倒计时的天、时、分、秒
+    const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+
+    // 格式化并显示倒计时
+    countdownElement.textContent = `T-${days}D ${hours}:${minutes}:${seconds}`;
+  });
+}
+
+// 每秒更新一次倒计时
+setInterval(updateCountdowns, 1000);
