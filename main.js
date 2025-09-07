@@ -174,15 +174,14 @@ function updateCountdowns() {
   const events = document.querySelectorAll('.event');
   events.forEach(event => {
     const countdownElement = event.querySelector('.countdown');
-    const startTimeUTC = new Date(event.getAttribute('data-start-time')); // 从 data-start-time 获取 UTC 时间
+    const startTime = new Date(event.getAttribute('data-start-time')); // 直接获取北京时间的活动开始时间
     const repeat = event.getAttribute('data-repeat') === 'true';
 
-    // 获取当前时间，并将其转换为北京时间（UTC +8）
-    const now = new Date();
-    now.setHours(now.getHours() + 8);  // 调整为北京时间（UTC+8）
+    // 获取当前时间（北京时间）
+    const now = new Date();  // 当前时间是系统时间，假设用户设备时间就是北京时间
 
     // 计算剩余时间（毫秒）
-    let timeRemaining = startTimeUTC.getTime() - now.getTime();
+    let timeRemaining = startTime.getTime() - now.getTime();
 
     if (timeRemaining < 0) {
       if (repeat) {
@@ -208,3 +207,5 @@ function updateCountdowns() {
 // 每秒更新一次倒计时
 setInterval(updateCountdowns, 1000);
 
+// 页面加载时立即执行一次
+updateCountdowns();
