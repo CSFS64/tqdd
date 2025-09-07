@@ -106,33 +106,57 @@
         <h2>偷情（寻找同居）</h2>
         <p>我们拥有同居匹配系统，点击下方寻找同居按钮并按要求填写相关信息，系统将自动为你匹配和适度最高的同居并提供相关联系方式。</p>
         <button class="btn" id="matchBtn" type="button">填写同居要求</button>
-
+    
         <dialog id="matchDialog" class="modal">
           <form id="matchForm">
             <h3 style="margin:0 0 .75rem 0;">寻找同居</h3>
-        
+    
             <input name="nickname" placeholder="游戏昵称" required>
+    
             <input name="contact" placeholder="联系方式（QQ/微信）" required>
-        
-            <label class="muted">可用时段（逗号分隔）：weekday,weekend,morning,afternoon,evening,night</label>
-            <input name="slots" placeholder="weekday,evening">
-        
-            <label class="muted">玩法（逗号分隔）：pvp,pve,build,trade,explore</label>
-            <input name="modes" placeholder="pve,build">
-        
+    
+            <label class="muted">可用时段（选择多个）</label>
+            <select name="slots" multiple required>
+              <option value="weekday">工作日</option>
+              <option value="weekend">周末</option>
+              <option value="morning">早晨</option>
+              <option value="afternoon">下午</option>
+              <option value="evening">晚上</option>
+              <option value="night">夜晚</option>
+            </select>
+    
+            <label class="muted">玩法（选择多个）</label>
+            <select name="modes" multiple required>
+              <option value="pvp">PvP</option>
+              <option value="pve">PvE</option>
+              <option value="build">建造</option>
+              <option value="trade">交易</option>
+              <option value="explore">探索</option>
+            </select>
+    
             <label class="muted">是否语音</label>
             <select name="voice">
               <option value="yes">接受语音</option>
               <option value="no">不语音</option>
             </select>
-        
+    
+            <label class="muted">性别</label>
+            <select name="gender" required>
+              <option value="male">男</option>
+              <option value="female">女</option>
+              <option value="non-binary">非二元</option>
+              <option value="transgender">跨性别</option>
+              <option value="genderqueer">性别酷儿</option>
+              <option value="other">其他</option>
+            </select>
+    
             <textarea name="note" rows="4" placeholder="其他要求 / 自我介绍（可选）"></textarea>
-        
+    
             <div class="modal__actions">
               <button class="btn btn--primary" type="submit">提交并匹配</button>
               <button class="btn" type="button" id="closeMatch">取消</button>
             </div>
-        
+    
             <p id="matchMsg" class="muted" hidden style="margin:.5rem 0 0 0;"></p>
           </form>
         </dialog>
