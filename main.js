@@ -209,20 +209,3 @@ setInterval(updateCountdowns, 1000);
 
 // 页面加载时立即执行一次
 updateCountdowns();
-
-// 给每个活动的 "展开介绍" 按钮添加事件监听
-document.querySelectorAll('.event__toggle-description').forEach(button => {
-  button.addEventListener('click', function() {
-    const eventDetails = this.closest('.event').querySelector('.event__description');
-    
-    // 切换描述部分的显示与隐藏
-    eventDetails.classList.toggle('show');  // 如果描述部分已显示，则隐藏，否则显示
-    
-    // 根据活动描述的显示状态更改按钮文本
-    if (eventDetails.classList.contains('show')) {
-      this.textContent = '收起介绍';  // 描述部分显示时，按钮变为“收起介绍”
-    } else {
-      this.textContent = '展开介绍';  // 描述部分隐藏时，按钮变为“展开介绍”
-    }
-  });
-});
