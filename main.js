@@ -216,13 +216,13 @@ document.querySelectorAll('.event__toggle-description').forEach(button => {
     const eventDetails = this.closest('.event').querySelector('.event__description');
     
     // 切换描述部分的显示与隐藏
-    if (eventDetails.style.display === 'none' || eventDetails.style.display === '') {
-      eventDetails.style.display = 'block'; // 显示活动描述
-      this.textContent = '收起介绍'; // 更改按钮文本为“收起介绍”
+    eventDetails.classList.toggle('show');  // 如果描述部分已显示，则隐藏，否则显示
+    
+    // 根据活动描述的显示状态更改按钮文本
+    if (eventDetails.classList.contains('show')) {
+      this.textContent = '收起介绍';  // 描述部分显示时，按钮变为“收起介绍”
     } else {
-      eventDetails.style.display = 'none'; // 隐藏活动描述
-      this.textContent = '展开介绍'; // 更改按钮文本为“展开介绍”
+      this.textContent = '展开介绍';  // 描述部分隐藏时，按钮变为“展开介绍”
     }
   });
 });
-
