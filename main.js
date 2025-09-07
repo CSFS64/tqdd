@@ -209,3 +209,20 @@ setInterval(updateCountdowns, 1000);
 
 // 页面加载时立即执行一次
 updateCountdowns();
+
+// 给每个活动的 "展开介绍" 按钮添加事件监听
+document.querySelectorAll('.event__toggle-description').forEach(button => {
+  button.addEventListener('click', function() {
+    const eventDetails = this.closest('.event').querySelector('.event__description');
+    
+    // 切换描述部分的显示与隐藏
+    if (eventDetails.style.display === 'none' || eventDetails.style.display === '') {
+      eventDetails.style.display = 'block'; // 显示活动描述
+      this.textContent = '收起介绍'; // 更改按钮文本为“收起介绍”
+    } else {
+      eventDetails.style.display = 'none'; // 隐藏活动描述
+      this.textContent = '展开介绍'; // 更改按钮文本为“展开介绍”
+    }
+  });
+});
+
