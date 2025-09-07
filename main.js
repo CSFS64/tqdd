@@ -99,7 +99,7 @@ document.addEventListener('click', () => {
   if (video && video.paused) video.play().catch(() => {});
 }, { once: true });
 
-// —— 同居匹配：弹窗 + 提交 ——
+// 同居匹配：弹窗 + 提交
 const matchBtn     = document.getElementById('matchBtn');
 const matchDialog  = document.getElementById('matchDialog');
 const matchForm    = document.getElementById('matchForm');
@@ -115,6 +115,7 @@ function openMatch() {
     matchDialog.classList.add('is-open'); // div 模式
   }
 }
+
 function closeMatchModal() {
   if (isDialogEl && typeof matchDialog.close === 'function') {
     matchDialog.close();
@@ -167,3 +168,4 @@ matchForm?.addEventListener('submit', async (e) => {
   }
   matchMsg.hidden = false;
 });
+
