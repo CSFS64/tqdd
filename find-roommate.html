@@ -1,137 +1,239 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>寻找同居</title>
+  <meta name="color-scheme" content="dark light" />
   <style>
-    body { font-family: Arial, sans-serif; background-color: #121212; color: white; padding: 2rem; }
-    .container { width: 100%; max-width: 600px; margin: 0 auto; }
-    .container h1 { text-align: center; margin-bottom: 1rem; }
-    .form-container { display: flex; flex-direction: column; gap: 1.5rem; }
-    label { font-size: 1rem; color: #ffdd57; margin-bottom: 0.5rem; }
-    input, select, textarea { padding: 0.5rem; font-size: 1rem; border-radius: 5px; border: 1px solid #ccc; width: 100%; }
-    select[multiple] { height: 150px; }
-    .highlight { color: #ffdd57; font-weight: bold; }
-    .submit-btn { padding: 0.8rem 2rem; font-size: 1.2rem; background-color: #007bff; border: none; border-radius: 5px; color: white; cursor: pointer; margin-top: 1rem; }
-    .submit-btn:hover { background-color: #0056b3; }
-    .muted { color:#bdbdbd; margin-top:.75rem; }
+    :root{
+      --bg:#121212;
+      --card:#1b1b1b;
+      --line:#2a2a2a;
+      --fg:#f5f5f5;
+      --muted:#bdbdbd;
+      --primary:#2b68ff;
+      --primary-hover:#1f55d8;
+      --accent:#ffdd57;
+      --danger:#ff6464;
+      --success:#4caf50;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans SC", "PingFang SC", "Microsoft Yahei", sans-serif;
+      background:var(--bg);
+      color:var(--fg);
+      padding:2rem 1rem;
+    }
+    .container{max-width:720px;margin:0 auto}
+    h1{margin:0 0 1rem;text-align:center;font-size:1.75rem}
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:1.25rem;
+    }
+    .form{
+      display:flex;flex-direction:column;gap:1rem;
+    }
+    .row{display:flex;flex-direction:column;gap:.5rem}
+    label{font-weight:600;color:var(--accent)}
+    input,select,textarea{
+      width:100%;padding:.65rem .75rem;font-size:1rem;
+      border-radius:8px;border:1px solid #3a3a3a;background:#101010;color:var(--fg);
+      outline:none;
+    }
+    textarea{resize:vertical;min-height:96px}
+    select[multiple]{height:168px}
+    .hint{color:var(--muted);font-size:.9rem}
+    .actions{display:flex;gap:.75rem;align-items:center;flex-wrap:wrap}
+    .btn{
+      appearance:none;border:0;border-radius:10px;padding:.75rem 1.1rem;cursor:pointer;
+      background:var(--primary);color:#fff;font-weight:700;font-size:1rem;
+    }
+    .btn:hover{background:var(--primary-hover)}
+    .btn[disabled]{opacity:.6;cursor:not-allowed}
+    .msg{margin-top:.5rem;font-size:.95rem}
+    .msg--error{color:var(--danger)}
+    .msg--ok{color:var(--success)}
+    .divider{height:1px;background:var(--line);margin: .25rem 0 0}
+    .required { color: var(--accent); font-weight:700 }
+    .inline{display:inline}
+    .footer-note{color:var(--muted);font-size:.85rem;margin-top:1rem}
   </style>
 </head>
 <body>
   <div class="container">
     <h1>填写同居要求</h1>
+    <div class="card">
+      <form id="matchForm" class="form" novalidate>
+        <div class="row">
+          <label for="nickname">游戏昵称 <span class="required">(必填)</span></label>
+          <input id="nickname" name="nickname" placeholder="请输入游戏昵称" required />
+        </div>
 
-    <!-- 加上 form，包括一个结果消息区域 -->
-    <form id="matchForm" class="form-container" novalidate>
-      <div>
-        <label for="nickname">游戏昵称 <span class="highlight">(必填)</span></label>
-        <input type="text" id="nickname" name="nickname" placeholder="请输入游戏昵称" required>
-      </div>
+        <div class="row">
+          <label for="contact">联系方式（QQ/微信） <span class="required">(必填)</span></label>
+          <input id="contact" name="contact" placeholder="请输入联系方式" required />
+          <div class="hint">用于把匹配到的对象联系方式发给你（仅你和对方可见）。</div>
+        </div>
 
-      <div>
-        <label for="contact">联系方式（QQ/微信） <span class="highlight">(必填)</span></label>
-        <input type="text" id="contact" name="contact" placeholder="请输入联系方式" required>
-      </div>
+        <div class="row">
+          <label for="slots">可用时段 <span class="required">(必填)</span></label>
+          <select id="slots" name="slots" multiple required>
+            <option value="weekday">工作日</option>
+            <option value="weekend">周末</option>
+            <option value="morning">早晨</option>
+            <option value="afternoon">下午</option>
+            <option value="evening">晚上</option>
+            <option value="night">夜晚</option>
+          </select>
+          <div class="hint">电脑端按住 <strong>Ctrl/⌘</strong> 多选；手机端点选多个即可。</div>
+        </div>
 
-      <div>
-        <label for="slots">可用时段（电脑端按住 Ctrl/⌘ 多选） <span class="highlight">(必填)</span></label>
-        <select name="slots" id="slots" multiple required>
-          <option value="morning">早晨</option>
-          <option value="afternoon">下午</option>
-          <option value="evening">晚上</option>
-          <option value="night">夜晚</option>
-          <option value="weekday">工作日</option>
-          <option value="weekend">周末</option>
-        </select>
-      </div>
+        <div class="row">
+          <label for="modes">玩法偏好 <span class="required">(必填)</span></label>
+          <select id="modes" name="modes" multiple required>
+            <option value="pvp">PvP</option>
+            <option value="pve">PvE</option>
+            <option value="build">建造</option>
+            <option value="trade">交易</option>
+            <option value="explore">探索</option>
+          </select>
+        </div>
 
-      <div>
-        <label for="modes">玩法（电脑端按住 Ctrl/⌘ 多选） <span class="highlight">(必填)</span></label>
-        <select name="modes" id="modes" multiple required>
-          <option value="pvp">PvP</option>
-          <option value="pve">PvE</option>
-          <option value="build">建造</option>
-          <option value="trade">交易</option>
-          <option value="explore">探索</option>
-        </select>
-      </div>
+        <div class="row">
+          <label for="voice">是否接受语音</label>
+          <select id="voice" name="voice">
+            <option value="yes">接受语音</option>
+            <option value="no">不语音</option>
+          </select>
+        </div>
 
-      <div>
-        <label for="voice">是否语音</label>
-        <select name="voice" id="voice">
-          <option value="yes">接受语音</option>
-          <option value="no">不语音</option>
-        </select>
-      </div>
+        <div class="row">
+          <label for="gender">性别 <span class="required">(必填)</span></label>
+          <select id="gender" name="gender" required>
+            <option value="" selected disabled>请选择</option>
+            <option value="male">男</option>
+            <option value="female">女</option>
+            <option value="non-binary">非二元</option>
+            <option value="transgender">跨性别</option>
+            <option value="genderqueer">性别酷儿</option>
+            <option value="other">其他</option>
+          </select>
+        </div>
 
-      <div>
-        <label for="gender">性别 <span class="highlight">(必填)</span></label>
-        <select name="gender" id="gender" required>
-          <option value="male">男</option>
-          <option value="female">女</option>
-          <option value="non-binary">非二元</option>
-          <option value="transgender">跨性别</option>
-          <option value="genderqueer">性别酷儿</option>
-          <option value="other">其他</option>
-        </select>
-      </div>
+        <div class="row">
+          <label for="note">其他要求 / 自我介绍（可选）</label>
+          <textarea id="note" name="note" placeholder="例如：偏向建造与探索，周末全天在线；希望能固定语音。"></textarea>
+        </div>
 
-      <div>
-        <label for="note">其他要求 / 自我介绍</label>
-        <textarea name="note" id="note" rows="4" placeholder="请填写其他要求或自我介绍"></textarea>
-      </div>
+        <div class="actions">
+          <button class="btn" id="submitBtn" type="submit">提交并匹配</button>
+          <span id="inlineError" class="msg msg--error" role="alert" aria-live="polite" hidden></span>
+        </div>
 
-      <button type="submit" class="submit-btn" id="submitBtn">提交并匹配</button>
-      <p id="matchMsg" class="muted" hidden></p>
-    </form>
+        <div class="divider"></div>
+        <div id="matchMsg" class="msg" aria-live="polite" hidden></div>
+        <p class="footer-note">提交即表示同意将你的昵称、可用时段、玩法偏好等信息用于匹配用途。</p>
+      </form>
+    </div>
   </div>
 
   <script>
     const ENDPOINT = 'https://tqdd-match.20060303jjc.workers.dev/submit';
 
-    function getMultiSelectCSV(sel) {
-      return Array.from(sel.selectedOptions).map(o => o.value).join(',');
+    // 工具：多选转 CSV（与后端 splitCSV 对应）
+    function toCSV(selectEl){
+      return Array.from(selectEl.selectedOptions).map(o => o.value).join(',');
     }
+    function show(el, ok=true){ el.hidden = !ok; }
+    function setText(el, html=false, content=''){ html ? (el.innerHTML = content) : (el.textContent = content); }
+    function disable(el, d=true){ el.disabled = d; }
+
+    // 可选：尝试预填（本地存储，体验更好）
+    (function preload(){
+      const fields = ['nickname','contact','note'];
+      fields.forEach(id=>{
+        const v = localStorage.getItem('fm_'+id);
+        if (v) document.getElementById(id).value = v;
+      });
+    })();
 
     document.getElementById('matchForm').addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      const msg = document.getElementById('matchMsg');
-      const btn = document.getElementById('submitBtn');
-      msg.hidden = true;
+      const msg      = document.getElementById('matchMsg');
+      const iError   = document.getElementById('inlineError');
+      const btn      = document.getElementById('submitBtn');
 
-      // 收集数据
-      const fd = new FormData(e.target);
-      // 多选 -> CSV，便于后端 splitCSV 解析
-      fd.set('slots', getMultiSelectCSV(document.getElementById('slots')));
-      fd.set('modes', getMultiSelectCSV(document.getElementById('modes')));
+      show(msg,false); show(iError,false);
 
-      // 转成普通对象并去除首尾空格
-      const data = {};
-      for (const [k, v] of fd.entries()) data[k] = typeof v === 'string' ? v.trim() : v;
+      // ===== 自定义必填校验 =====
+      const nickname = document.getElementById('nickname').value.trim();
+      const contact  = document.getElementById('contact').value.trim();
+      const slotsSel = document.getElementById('slots');
+      const modesSel = document.getElementById('modes');
+      const gender   = document.getElementById('gender').value;
 
+      if (!nickname || !contact || slotsSel.selectedOptions.length===0 || modesSel.selectedOptions.length===0 || !gender) {
+        setText(iError,false,'请填写所有必填字段（昵称、联系方式、时段、玩法、性别）');
+        show(iError,true);
+        return;
+      }
+
+      // ===== 组装数据 =====
+      const data = {
+        nickname,
+        contact,
+        slots: toCSV(slotsSel),
+        modes: toCSV(modesSel),
+        voice: document.getElementById('voice').value || 'no',
+        gender,
+        note: document.getElementById('note').value.trim()
+      };
+
+      // 可选：保存部分字段，下次自动带出
+      try{
+        localStorage.setItem('fm_nickname', nickname);
+        localStorage.setItem('fm_contact', contact);
+        localStorage.setItem('fm_note', document.getElementById('note').value.trim());
+      }catch{}
+
+      // ===== 提交到 Worker =====
       try {
-        btn.disabled = true;
-        const res = await fetch(ENDPOINT, {
+        disable(btn,true);
+        setText(msg,false,'提交中…'); show(msg,true);
+
+        const res  = await fetch(ENDPOINT, {
           method: 'POST',
-          headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+          headers: { 'Accept':'application/json', 'Content-Type':'application/json' },
           body: JSON.stringify(data)
         });
         const json = await res.json();
 
-        if (json.ok) {
-          msg.innerHTML = json.match
-            ? `已提交！<br>匹配到 <strong>${json.match.nickname}</strong>（${json.match.score}/10）。<br>联系方式：<strong>${json.match.contact}</strong>`
-            : '已提交！暂未找到高匹配度对象，有新申请加入时再来看看～';
+        if (json && json.ok) {
+          if (json.match) {
+            setText(msg, true,
+              `已提交！<br>匹配到 <strong>${json.match.nickname}</strong>（${json.match.score}/10）。<br>联系方式：<strong>${json.match.contact}</strong>`
+            );
+            msg.className = 'msg msg--ok';
+          } else {
+            setText(msg,false,'已提交！暂未找到高匹配度对象，有新申请加入时再来看看～');
+            msg.className = 'msg';
+          }
         } else {
-          msg.textContent = '提交失败，请稍后重试或加群联系：1058848870';
+          setText(msg,false,'提交失败，请稍后重试或加群联系：1058848870');
+          msg.className = 'msg msg--error';
         }
       } catch (err) {
-        msg.textContent = '网络异常，稍后再试或加群联系：1058848870';
+        setText(msg,false,'网络异常，稍后再试或加群联系：1058848870');
+        msg.className = 'msg msg--error';
       } finally {
-        btn.disabled = false;
-        msg.hidden = false;
+        disable(btn,false);
+        show(msg,true);
+        msg.scrollIntoView({behavior:'smooth', block:'nearest'});
       }
     });
   </script>
