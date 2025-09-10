@@ -5,119 +5,135 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>寻找同居</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #121212;
-      color: white;
-      padding: 2rem;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 600px;
-      margin: 0 auto;
-    }
-
-    .container h1 {
-      text-align: center;
-      margin-bottom: 1rem;
-    }
-
-    .form-container {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-
-    label {
-      font-size: 1rem;
-      color: #ffdd57; /* 高亮文字 */
-      margin-bottom: 0.5rem;
-    }
-
-    input, select, textarea {
-      padding: 0.5rem;
-      font-size: 1rem;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      width: 100%;
-    }
-
-    select[multiple] {
-      height: 150px; /* 设置多选框的高度 */
-    }
-
-    .highlight {
-      color: #ffdd57; /* 高亮说明文字 */
-      font-weight: bold;
-    }
-
-    .submit-btn {
-      padding: 0.8rem 2rem;
-      font-size: 1.2rem;
-      background-color: #007bff;
-      border: none;
-      border-radius: 5px;
-      color: white;
-      cursor: pointer;
-      margin-top: 1rem;
-    }
-
-    .submit-btn:hover {
-      background-color: #0056b3;
-    }
+    body { font-family: Arial, sans-serif; background-color: #121212; color: white; padding: 2rem; }
+    .container { width: 100%; max-width: 600px; margin: 0 auto; }
+    .container h1 { text-align: center; margin-bottom: 1rem; }
+    .form-container { display: flex; flex-direction: column; gap: 1.5rem; }
+    label { font-size: 1rem; color: #ffdd57; margin-bottom: 0.5rem; }
+    input, select, textarea { padding: 0.5rem; font-size: 1rem; border-radius: 5px; border: 1px solid #ccc; width: 100%; }
+    select[multiple] { height: 150px; }
+    .highlight { color: #ffdd57; font-weight: bold; }
+    .submit-btn { padding: 0.8rem 2rem; font-size: 1.2rem; background-color: #007bff; border: none; border-radius: 5px; color: white; cursor: pointer; margin-top: 1rem; }
+    .submit-btn:hover { background-color: #0056b3; }
+    .muted { color:#bdbdbd; margin-top:.75rem; }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>填写同居要求</h1>
-    <div class="form-container">
-      <label for="nickname">游戏昵称 <span class="highlight">(必填)</span></label>
-      <input type="text" id="nickname" name="nickname" placeholder="请输入游戏昵称" required>
 
-      <label for="contact">联系方式（QQ/微信） <span class="highlight">(必填)</span></label>
-      <input type="text" id="contact" name="contact" placeholder="请输入联系方式" required>
+    <!-- 加上 form，包括一个结果消息区域 -->
+    <form id="matchForm" class="form-container" novalidate>
+      <div>
+        <label for="nickname">游戏昵称 <span class="highlight">(必填)</span></label>
+        <input type="text" id="nickname" name="nickname" placeholder="请输入游戏昵称" required>
+      </div>
 
-      <label for="slots">可用时段（电脑端按住ctrl多选） <span class="highlight">(必填)</span></label>
-      <select name="slots" id="slots" multiple required>
-        <option value="morning">早晨</option>
-        <option value="afternoon">下午</option>
-        <option value="evening">晚上</option>
-        <option value="night">夜晚</option>
-        <option value="weekday">工作日</option>
-        <option value="weekend">周末</option>
-      </select>
+      <div>
+        <label for="contact">联系方式（QQ/微信） <span class="highlight">(必填)</span></label>
+        <input type="text" id="contact" name="contact" placeholder="请输入联系方式" required>
+      </div>
 
-      <label for="modes">玩法（电脑端按住ctrl多选） <span class="highlight">(必填)</span></label>
-      <select name="modes" id="modes" multiple required>
-        <option value="pvp">PvP</option>
-        <option value="pve">PvE</option>
-        <option value="build">建造</option>
-        <option value="trade">交易</option>
-        <option value="explore">探索</option>
-      </select>
+      <div>
+        <label for="slots">可用时段（电脑端按住 Ctrl/⌘ 多选） <span class="highlight">(必填)</span></label>
+        <select name="slots" id="slots" multiple required>
+          <option value="morning">早晨</option>
+          <option value="afternoon">下午</option>
+          <option value="evening">晚上</option>
+          <option value="night">夜晚</option>
+          <option value="weekday">工作日</option>
+          <option value="weekend">周末</option>
+        </select>
+      </div>
 
-      <label for="voice">是否语音</label>
-      <select name="voice" id="voice">
-        <option value="yes">接受语音</option>
-        <option value="no">不语音</option>
-      </select>
+      <div>
+        <label for="modes">玩法（电脑端按住 Ctrl/⌘ 多选） <span class="highlight">(必填)</span></label>
+        <select name="modes" id="modes" multiple required>
+          <option value="pvp">PvP</option>
+          <option value="pve">PvE</option>
+          <option value="build">建造</option>
+          <option value="trade">交易</option>
+          <option value="explore">探索</option>
+        </select>
+      </div>
 
-      <label for="gender">性别 <span class="highlight">(必填)</span></label>
-      <select name="gender" id="gender" required>
-        <option value="male">男</option>
-        <option value="female">女</option>
-        <option value="non-binary">非二元</option>
-        <option value="transgender">跨性别</option>
-        <option value="genderqueer">性别酷儿</option>
-        <option value="other">其他</option>
-      </select>
+      <div>
+        <label for="voice">是否语音</label>
+        <select name="voice" id="voice">
+          <option value="yes">接受语音</option>
+          <option value="no">不语音</option>
+        </select>
+      </div>
 
-      <label for="note">其他要求 / 自我介绍</label>
-      <textarea name="note" id="note" rows="4" placeholder="请填写其他要求或自我介绍"></textarea>
+      <div>
+        <label for="gender">性别 <span class="highlight">(必填)</span></label>
+        <select name="gender" id="gender" required>
+          <option value="male">男</option>
+          <option value="female">女</option>
+          <option value="non-binary">非二元</option>
+          <option value="transgender">跨性别</option>
+          <option value="genderqueer">性别酷儿</option>
+          <option value="other">其他</option>
+        </select>
+      </div>
 
-      <button type="submit" class="submit-btn">提交并匹配</button>
-    </div>
+      <div>
+        <label for="note">其他要求 / 自我介绍</label>
+        <textarea name="note" id="note" rows="4" placeholder="请填写其他要求或自我介绍"></textarea>
+      </div>
+
+      <button type="submit" class="submit-btn" id="submitBtn">提交并匹配</button>
+      <p id="matchMsg" class="muted" hidden></p>
+    </form>
   </div>
+
+  <script>
+    const ENDPOINT = 'https://tqdd-match.20060303jjc.workers.dev/submit';
+
+    function getMultiSelectCSV(sel) {
+      return Array.from(sel.selectedOptions).map(o => o.value).join(',');
+    }
+
+    document.getElementById('matchForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const msg = document.getElementById('matchMsg');
+      const btn = document.getElementById('submitBtn');
+      msg.hidden = true;
+
+      // 收集数据
+      const fd = new FormData(e.target);
+      // 多选 -> CSV，便于后端 splitCSV 解析
+      fd.set('slots', getMultiSelectCSV(document.getElementById('slots')));
+      fd.set('modes', getMultiSelectCSV(document.getElementById('modes')));
+
+      // 转成普通对象并去除首尾空格
+      const data = {};
+      for (const [k, v] of fd.entries()) data[k] = typeof v === 'string' ? v.trim() : v;
+
+      try {
+        btn.disabled = true;
+        const res = await fetch(ENDPOINT, {
+          method: 'POST',
+          headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const json = await res.json();
+
+        if (json.ok) {
+          msg.innerHTML = json.match
+            ? `已提交！<br>匹配到 <strong>${json.match.nickname}</strong>（${json.match.score}/10）。<br>联系方式：<strong>${json.match.contact}</strong>`
+            : '已提交！暂未找到高匹配度对象，有新申请加入时再来看看～';
+        } else {
+          msg.textContent = '提交失败，请稍后重试或加群联系：1058848870';
+        }
+      } catch (err) {
+        msg.textContent = '网络异常，稍后再试或加群联系：1058848870';
+      } finally {
+        btn.disabled = false;
+        msg.hidden = false;
+      }
+    });
+  </script>
 </body>
 </html>
