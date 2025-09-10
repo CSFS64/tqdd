@@ -154,3 +154,7 @@ document.querySelectorAll('.event__toggle-description').forEach(button => {
     }
   });
 });
+
+document.getElementById('matchBtn')?.addEventListener('click', () => {
+  window.open('find-roommate.html', '_blank');
+});
