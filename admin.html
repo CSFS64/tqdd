@@ -82,19 +82,21 @@
       </table>
     </section>
 
-    <!-- 招募申请 面板（只读） -->
+    <!-- 招募申请 面板（可多选删除） -->
     <section id="panel-recruit" class="card" role="tabpanel" aria-labelledby="tab-recruit" hidden>
       <div class="toolbar">
         <div class="left">
           <button class="btn" id="reloadRecruit">刷新</button>
+          <button class="btn btn--danger" id="deleteSelectedRe">删除所选</button>
           <span class="muted" id="reCount"></span>
         </div>
-        <div class="muted">表：recruits/…（只读）</div>
+        <div class="muted">表：recruits/…</div>
       </div>
-
+    
       <table class="table" id="recruitTable">
         <thead>
           <tr>
+            <th style="width:36px;"><input type="checkbox" id="checkAllRe"></th>
             <th>昵称 / 联系</th>
             <th>生存等级</th>
             <th>在线日</th>
@@ -104,7 +106,7 @@
           </tr>
         </thead>
         <tbody id="recruitTbody">
-          <tr><td colspan="6" class="muted">未加载</td></tr>
+          <tr><td colspan="7" class="muted">未加载</td></tr>
         </tbody>
       </table>
     </section>
