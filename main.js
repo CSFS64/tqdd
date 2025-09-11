@@ -154,3 +154,37 @@ document.querySelectorAll('.event__toggle-description').forEach(button => {
     }
   });
 });
+
+const LIST_ENDPOINT = 'https://tqdd-match.20060303jjc.workers.dev/list';
+
+async function loadMatches() {
+  const container = document.getElementById('matchEntries');
+  if (!container) return;
+  container.innerHTML = '<p style="color:#999;">加载中…</p>';
+
+  try {
+    const res = await fetch(LIST_ENDPOINT, { headers: { 'Accept': 'application/json' } });
+    const json = await res.json();
+
+    if (json.ok && Array.isArray(json.items)) {
+      if (json.items.length === 0) {
+        container.innerHTML = '<p style="color:#999;">暂无申请</p>';
+      } else {
+        container.innerHTML = '';
+        json.items.forEach(item => {
+          const div = document.createElement('div');
+          div.className = 'match-entry';
+          div.innerHTML = `<strong>${item.nickname}</strong> — ${item.contact}`;
+          container.appendChild(div);
+        });
+      }
+    } else {
+      container.innerHTML = '<p style="color:#999;">加载失败</p>';
+    }
+  } catch (err) {
+    container.innerHTML = '<p style="color:#999;">网络错误</p>';
+  }
+}
+
+// 页面加载时立即执行
+loadMatches();
