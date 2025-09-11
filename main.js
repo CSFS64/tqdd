@@ -224,13 +224,16 @@ async function loadMatches() {
       return;
     }
 
+    // 生成一行（性别/时段中文化）
     const renderRow = (item) => {
       const tr = document.createElement('tr');
-      const slotsText = Array.isArray(item.slots) ? item.slots.join(', ') : '';
+      const genderText = genderMap[item.gender] || '未填写';
+      const slotsText  = slotsToChinese(item.slots);
+
       tr.innerHTML = `
         <td class="nickname">${escapeHTML(item.nickname || '')}</td>
         <td class="contact">${escapeHTML(item.contact || '')}</td>
-        <td class="gender">${escapeHTML(item.gender || '')}</td> <!-- 新增性别 -->
+        <td class="gender">${escapeHTML(genderText)}</td>
         <td class="slots">${escapeHTML(slotsText)}</td>
         <td class="note">${escapeHTML(item.note || '')}</td>
       `;
@@ -246,20 +249,15 @@ async function loadMatches() {
     if (rest.length > 0 && toggle) {
       extra.innerHTML = '';
       rest.forEach(item => extra.appendChild(renderRow(item)));
+      extra.hidden = true;
       toggle.hidden = false;
 
       toggle.onclick = () => {
         const expanded = toggle.dataset.expanded === 'true';
-        if (expanded) {
-          extra.hidden = true;
-          toggle.dataset.expanded = 'false';
-          toggle.textContent = '展开更多';
-        } else {
-          extra.hidden = false;
-          toggle.dataset.expanded = 'true';
-          toggle.textContent = '收起';
-          toggle.scrollIntoView({ behavior:'smooth', block:'nearest' });
-        }
+        extra.hidden = expanded;
+        toggle.dataset.expanded = expanded ? 'false' : 'true';
+        toggle.textContent = expanded ? '展开更多' : '收起';
+        if (!expanded) toggle.scrollIntoView({ behavior:'smooth', block:'nearest' });
       };
     } else if (toggle) {
       toggle.hidden = true;
@@ -267,15 +265,6 @@ async function loadMatches() {
   } catch (err) {
     tbody.innerHTML = `<tr><td colspan="5" style="color:#999;">网络错误</td></tr>`;
   }
-}
-
-function escapeHTML(str) {
-  return String(str)
-    .replaceAll('&','&amp;')
-    .replaceAll('<','&lt;')
-    .replaceAll('>','&gt;')
-    .replaceAll('"','&quot;')
-    .replaceAll("'","&#39;");
 }
 
 // 页面加载时执行
