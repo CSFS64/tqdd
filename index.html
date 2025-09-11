@@ -139,15 +139,14 @@
           我们拥有同居匹配系统，点击下方寻找同居按钮并按要求填写相关信息，
           系统将自动为你匹配和适度最高的同居并提供相关联系方式。
         </p>
-        <p>
-          如果不想填写表格，也可以在已有申请直接联系心仪同居。
-        </p>
+        <p>如果不想填写表格，也可以在已有申请直接联系心仪同居。</p>
     
         <button class="btn" id="matchBtn" type="button">填写同居要求</button>
     
-        <!-- 新增展示区 -->
+        <!-- 已有申请 -->
         <div id="matchList" class="match-list">
           <h3>已有申请</h3>
+    
           <div class="table-wrapper">
             <table class="match-table" id="matchTable" aria-describedby="matchHelp">
               <thead>
@@ -162,21 +161,20 @@
               <tbody id="matchTbodyExtra" hidden></tbody>
             </table>
     
-            <div class="table-actions">
-              <button
-                id="toggleMore"
-                class="btn btn--ghost"
-                hidden
-                aria-expanded="false"
-              >
-                展开更多
-              </button>
-            </div>
-    
-            <p id="matchHelp" class="muted">
-              仅展示最近的几条，点击“展开更多”查看其余。
-            </p>
+            <!-- 与“展开介绍”一致的按钮样式 -->
+            <button
+              id="toggleMore"
+              class="event__toggle-description"
+              hidden
+              aria-expanded="false"
+            >
+              展开更多
+            </button>
           </div>
+    
+          <p id="matchHelp" class="muted">
+            仅展示最近的几条，点击“展开更多”查看其余。
+          </p>
         </div>
       </div> <!-- container -->
     </section>
