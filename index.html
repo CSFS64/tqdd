@@ -142,9 +142,26 @@
         <!-- 新增展示区 -->
         <div id="matchList" class="match-list">
           <h3>已有申请</h3>
-          <div id="matchEntries" class="match-entries"></div>
+          <div class="table-wrapper">
+            <table class="match-table" id="matchTable" aria-describedby="matchHelp">
+              <thead>
+                <tr>
+                  <th>昵称</th>
+                  <th>联系方式</th>
+                  <th>在线时段</th>
+                  <th style="width:40%;">自我介绍</th>
+                </tr>
+              </thead>
+              <tbody id="matchTbody"></tbody>
+              <tbody id="matchTbodyExtra" hidden></tbody>
+            </table>
+            <div class="table-actions">
+              <button id="toggleMore" class="btn btn--ghost" hidden>展开更多</button>
+            </div>
+            <p id="matchHelp" class="muted">仅展示最近的几条，点击“展开更多”查看其余。</p>
+          </div>
         </div>
-      </div>
+
     </section>
     
     <script>
