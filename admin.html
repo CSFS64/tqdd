@@ -1,59 +1,109 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>同居匹配管理后台</title>
   <style>
     body { font-family: Arial, sans-serif; background:#121212; color:#f5f5f5; padding:1.5rem; }
     h1 { text-align:center; margin-bottom:1rem; }
-    .login { margin-bottom:1rem; text-align:center; }
+    .toolbar { display:flex; gap:.5rem; align-items:center; justify-content:center; margin-bottom:1rem; flex-wrap:wrap; }
     input,button { padding:0.5rem; font-size:1rem; border-radius:6px; border:1px solid #444; }
     button { background:#2b68ff; color:white; border:none; cursor:pointer; }
     button:hover { background:#1f55d8; }
-    table { width:100%; border-collapse:collapse; margin-top:1rem; }
-    th,td { border:1px solid #444; padding:0.5rem; text-align:left; }
-    th { background:#222; }
-    tr:nth-child(even) { background:#1b1b1b; }
+    button[disabled] { opacity:.6; cursor:not-allowed; }
+
     .danger { background:#ff5555; }
     .danger:hover { background:#d33; }
-    #msg { margin-top:1rem; color:#ffdd57; font-weight:bold; }
+
+    table { width:100%; border-collapse:collapse; margin-top:.5rem; }
+    th,td { border:1px solid #444; padding:0.5rem; text-align:left; vertical-align:top; }
+    th { background:#222; position:sticky; top:0; }
+    tr:nth-child(even) { background:#1b1b1b; }
+
+    #msg { margin-top:1rem; color:#ffdd57; font-weight:bold; text-align:center; }
+
+    .muted { color:#bbb; }
+    .nowrap { white-space:nowrap; }
   </style>
 </head>
 <body>
   <h1>同居匹配管理后台</h1>
 
-  <div class="login">
+  <div class="toolbar">
     <input id="token" type="password" placeholder="请输入管理员 Token" />
-    <button onclick="loadData()">加载数据</button>
+    <button id="btnLoad" onclick="loadData()">加载数据</button>
+    <button id="btnDeleteSelected" class="danger" onclick="deleteSelected()" disabled>删除所选（0）</button>
   </div>
 
   <div id="msg"></div>
-  <table id="dataTable" hidden>
-    <thead>
-      <tr>
-        <th>昵称</th>
-        <th>联系方式</th>
-        <th>时段</th>
-        <th>玩法</th>
-        <th>语音</th>
-        <th>性别</th>
-        <th>备注</th>
-        <th>时间</th>
-        <th>操作</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+
+  <div style="overflow:auto; max-height:70vh; border:1px solid #444; border-radius:8px;">
+    <table id="dataTable" hidden>
+      <thead>
+        <tr>
+          <th class="nowrap">
+            <input type="checkbox" id="chkAll" onclick="toggleAll(this)" />
+            全选
+          </th>
+          <th>昵称</th>
+          <th>联系方式</th>
+          <th>时段</th>
+          <th>玩法</th>
+          <th>语音</th>
+          <th>性别</th>
+          <th>备注</th>
+          <th>时间</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 
   <script>
     const BASE = "https://tqdd-match.20060303jjc.workers.dev";
+    let currentItems = [];           // 缓存列表
+    let selectedIds  = new Set();    // 选中集合
+
+    function setMsg(text) { document.getElementById("msg").textContent = text || ""; }
+
+    function updateDeleteSelectedButton() {
+      const btn = document.getElementById("btnDeleteSelected");
+      const count = selectedIds.size;
+      btn.textContent = `删除所选（${count}）`;
+      btn.disabled = count === 0;
+    }
+
+    function toggleAll(checkbox) {
+      selectedIds.clear();
+      if (checkbox.checked) {
+        currentItems.forEach(it => selectedIds.add(it.id));
+      }
+      // 同步行勾选
+      document.querySelectorAll('.row-check').forEach(cb => {
+        cb.checked = checkbox.checked;
+      });
+      updateDeleteSelectedButton();
+    }
+
+    function onRowCheckChanged(id, checked) {
+      if (checked) selectedIds.add(id);
+      else selectedIds.delete(id);
+      // 如果不是全部选中，则取消表头的全选
+      document.getElementById('chkAll').checked = (selectedIds.size === currentItems.length && currentItems.length > 0);
+      updateDeleteSelectedButton();
+    }
 
     async function loadData() {
       const token = document.getElementById("token").value.trim();
       if (!token) { alert("请输入 Token"); return; }
 
-      document.getElementById("msg").textContent = "加载中…";
+      setMsg("加载中…");
+      selectedIds.clear();
+      updateDeleteSelectedButton();
+      document.getElementById('chkAll').checked = false;
+
       try {
         const res = await fetch(`${BASE}/admin/list`, {
           headers: { "X-Admin-Token": token }
@@ -61,7 +111,7 @@
         const json = await res.json();
 
         if (!json.ok) {
-          document.getElementById("msg").textContent = "加载失败：" + (json.error || "未知错误");
+          setMsg("加载失败：" + (json.error || "未知错误"));
           return;
         }
 
@@ -69,41 +119,57 @@
         const tbody = table.querySelector("tbody");
         tbody.innerHTML = "";
 
-        json.items.forEach(item => {
+        currentItems = json.items || [];
+
+        currentItems.forEach(item => {
           const tr = document.createElement("tr");
           tr.innerHTML = `
-            <td>${item.nickname}</td>
-            <td>${item.contact}</td>
-            <td>${(item.slots || []).join(", ")}</td>
-            <td>${(item.modes || []).join(", ")}</td>
+            <td class="nowrap">
+              <input type="checkbox" class="row-check" data-id="${item.id}" />
+            </td>
+            <td>${escapeHTML(item.nickname)}</td>
+            <td>${escapeHTML(item.contact)}</td>
+            <td>${escapeHTML((item.slots || []).join(", "))}</td>
+            <td>${escapeHTML((item.modes || []).join(", "))}</td>
             <td>${item.voice ? "是" : "否"}</td>
-            <td>${item.gender}</td>
-            <td>${item.note || ""}</td>
-            <td>${new Date(item.ts).toLocaleString()}</td>
+            <td>${escapeHTML(item.gender || "")}</td>
+            <td>${escapeHTML(item.note || "")}</td>
+            <td class="nowrap">${new Date(item.ts).toLocaleString()}</td>
             <td><button class="danger" onclick="delItem('${item.id}')">删除</button></td>
           `;
           tbody.appendChild(tr);
         });
 
+        // 绑定每行的复选框事件
+        tbody.querySelectorAll('.row-check').forEach(cb => {
+          cb.addEventListener('change', (e) => {
+            onRowCheckChanged(e.target.getAttribute('data-id'), e.target.checked);
+          });
+        });
+
         table.hidden = false;
-        document.getElementById("msg").textContent = "加载完成，共 " + json.items.length + " 条记录";
+        setMsg("加载完成，共 " + currentItems.length + " 条记录");
       } catch (err) {
-        document.getElementById("msg").textContent = "网络错误：" + err;
+        setMsg("网络错误：" + err);
       }
     }
 
     async function delItem(id) {
       const token = document.getElementById("token").value.trim();
+      if (!token) { alert("请先输入 Token"); return; }
       if (!confirm("确定要删除这条记录吗？")) return;
 
       try {
-        const res = await fetch(`${BASE}/admin/delete?id=${id}`, {
+        const res = await fetch(`${BASE}/admin/delete?id=${encodeURIComponent(id)}`, {
           method: "DELETE",
           headers: { "X-Admin-Token": token }
         });
         const json = await res.json();
         if (json.ok) {
-          alert("删除成功");
+          // 从缓存移除并刷新表格/选择状态
+          currentItems = currentItems.filter(it => it.id !== id);
+          selectedIds.delete(id);
+          updateDeleteSelectedButton();
           loadData();
         } else {
           alert("删除失败：" + (json.error || "未知错误"));
@@ -111,6 +177,58 @@
       } catch (err) {
         alert("网络错误：" + err);
       }
+    }
+
+    async function deleteSelected() {
+      const token = document.getElementById("token").value.trim();
+      if (!token) { alert("请先输入 Token"); return; }
+
+      const ids = Array.from(selectedIds);
+      if (ids.length === 0) return;
+
+      if (!confirm(`将删除所选 ${ids.length} 条记录，确定吗？`)) return;
+
+      // 禁用按钮避免重复操作
+      const btn = document.getElementById("btnDeleteSelected");
+      const oldText = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = `删除中（${ids.length}）…`;
+
+      let success = 0, fail = 0;
+
+      for (const id of ids) {
+        try {
+          const res = await fetch(`${BASE}/admin/delete?id=${encodeURIComponent(id)}`, {
+            method: "DELETE",
+            headers: { "X-Admin-Token": token }
+          });
+          const json = await res.json();
+          if (json.ok) {
+            success++;
+            selectedIds.delete(id);
+          } else {
+            fail++;
+          }
+        } catch {
+          fail++;
+        }
+      }
+
+      btn.disabled = false;
+      btn.textContent = oldText;
+
+      setMsg(`批量删除完成：成功 ${success} 条，失败 ${fail} 条`);
+      // 重新载入数据
+      loadData();
+    }
+
+    function escapeHTML(str) {
+      return String(str)
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'","&#39;");
     }
   </script>
 </body>
