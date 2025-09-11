@@ -389,29 +389,63 @@ dialog.modal[open] {
   background-color: #0056b3;
 }
 
+.table-wrapper { width:100%; overflow:hidden; }
+.match-table {
+  width:100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 0.95rem;
+  background:#121212;
+  border:1px solid #333;
+  border-radius:10px;
+  overflow:hidden;
+}
+.match-table thead th {
+  background:#222;
+  color:#ffdd57;
+  text-align:left;
+  padding:.6rem .75rem;
+  border-bottom:1px solid #333;
+}
+.match-table td {
+  padding:.6rem .75rem;
+  border-top:1px solid #2a2a2a;
+  vertical-align:top;
+  word-wrap:break-word;
+}
+.match-table tbody tr:nth-child(even) td {
+  background:#161616;
+}
+
+/* 在线时段、联系方式做轻微弱化 */
+.match-table td.slots,
+.match-table td.contact { color:#cfcfcf; }
+
+/* 自我介绍做两行省略（移动端更干净） */
+.match-table td.note {
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+
+/* 操作区按钮 */
+.table-actions {
+  display:flex; justify-content:center; margin-top:.5rem;
+}
+.btn.btn--ghost {
+  background:transparent; color:#ffdd57; border:1px solid #444;
+  padding:.45rem .9rem; border-radius:8px; cursor:pointer;
+}
+.btn.btn--ghost:hover { background:#1b1b1b; }
+
+.muted { color:#999; font-size:.85rem; margin:.25rem 0 0; }
+
+/* 你已有的 .match-list 可以保留；如果不想再内部滚动，可去掉 max-height 与 overflow-y */
 .match-list {
   margin-top: 1.5rem;
   border: 1px solid #333;
   border-radius: 10px;
   padding: 1rem;
   background: #1b1b1b;
-  max-height: 220px;   /* 高度限制，避免太长 */
-  overflow-y: auto;    /* 内置滚动条 */
-}
-
-.match-list h3 {
-  margin-top: 0;
-  margin-bottom: 0.75rem;
-  font-size: 1.2rem;
-  color: #ffdd57;
-}
-
-.match-entry {
-  padding: 0.5rem 0;
-  border-bottom: 1px solid #333;
-  font-size: 0.95rem;
-}
-
-.match-entry:last-child {
-  border-bottom: none;
 }
