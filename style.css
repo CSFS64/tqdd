@@ -431,8 +431,7 @@ dialog.modal[open] {
 
 /* 操作区按钮 */
 .table-actions {
-  display: flex;
-  justify-content: flex-start; /* 左对齐 */
+  text-align: left;
   margin-top: 0.5rem;
 }
 .btn.btn--ghost {
