@@ -483,23 +483,3 @@ dialog.modal[open] {
   top: 0;
   z-index: 1;
 }
-
-/* 如果你之前写过“把表格变卡片”的响应式样式，这里强制覆盖回 table 布局 */
-@media (max-width: 900px){
-  .match-table{ display: table; }
-  .match-table thead{ display: table-header-group; }
-  .match-table tbody{ display: table-row-group; }
-  .match-table tr{ display: table-row; }
-  .match-table th,
-  .match-table td{ display: table-cell; }
-}
-
-/* 可选：右侧小提示渐变（暗示可横向滑动） */
-.table-wrapper::after{
-  content: "";
-  position: absolute;
-  right: 0; top: 0; bottom: 0;
-  width: 24px;
-  pointer-events: none;
-  background: linear-gradient(to left, rgba(0,0,0,.35), rgba(0,0,0,0));
-}
