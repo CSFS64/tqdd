@@ -1,235 +1,275 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>同居匹配管理后台</title>
-  <style>
-    body { font-family: Arial, sans-serif; background:#121212; color:#f5f5f5; padding:1.5rem; }
-    h1 { text-align:center; margin-bottom:1rem; }
-    .toolbar { display:flex; gap:.5rem; align-items:center; justify-content:center; margin-bottom:1rem; flex-wrap:wrap; }
-    input,button { padding:0.5rem; font-size:1rem; border-radius:6px; border:1px solid #444; }
-    button { background:#2b68ff; color:white; border:none; cursor:pointer; }
-    button:hover { background:#1f55d8; }
-    button[disabled] { opacity:.6; cursor:not-allowed; }
-
-    .danger { background:#ff5555; }
-    .danger:hover { background:#d33; }
-
-    table { width:100%; border-collapse:collapse; margin-top:.5rem; }
-    th,td { border:1px solid #444; padding:0.5rem; text-align:left; vertical-align:top; }
-    th { background:#222; position:sticky; top:0; }
-    tr:nth-child(even) { background:#1b1b1b; }
-
-    #msg { margin-top:1rem; color:#ffdd57; font-weight:bold; text-align:center; }
-
-    .muted { color:#bbb; }
-    .nowrap { white-space:nowrap; }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>后台管理</title>
+<meta name="color-scheme" content="dark light" />
+<style>
+  :root{
+    --bg:#0f0f0f;--card:#151515;--line:#2b2b2b;--fg:#f5f5f5;--muted:#a9a9a9;
+    --accent:#ffdd57;--primary:#2b68ff;--primary-hover:#1f55d8;--danger:#ff6464;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,"PingFang SC","Microsoft Yahei",sans-serif;}
+  .container{max-width:1080px;margin:0 auto;padding:1rem;}
+  h1{font-size:1.5rem;margin:.25rem 0 1rem}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1rem;margin-top:1rem}
+  .row{display:flex;gap:.75rem;flex-wrap:wrap;align-items:center}
+  input[type="password"],input[type="text"]{background:#111;color:var(--fg);border:1px solid #3a3a3a;border-radius:8px;padding:.55rem .7rem}
+  .btn{appearance:none;border:0;border-radius:10px;padding:.6rem .9rem;cursor:pointer;background:var(--primary);color:#fff;font-weight:700}
+  .btn:hover{background:var(--primary-hover)}
+  .btn--danger{background:var(--danger)}
+  .tabs{display:flex;gap:.5rem;margin-top:1rem;flex-wrap:wrap}
+  .tab{border:1px solid var(--line);background:#121212;color:#ddd;border-radius:999px;padding:.4rem .85rem;cursor:pointer}
+  .tab[aria-selected="true"]{background:#1e1e1e;color:var(--accent);border-color:#444}
+  .table{width:100%;border-collapse:collapse;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#111;margin-top:.75rem}
+  .table th,.table td{padding:.6rem .75rem;border-top:1px solid var(--line);text-align:left;vertical-align:top}
+  .table thead th{background:#1b1b1b;color:var(--accent);border-top:none}
+  .muted{color:var(--muted);font-size:.9rem}
+  .toolbar{display:flex;gap:.5rem;align-items:center;justify-content:space-between;margin-top:.5rem;flex-wrap:wrap}
+  .left{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+  .nowrap{white-space:nowrap}
+  .badge{display:inline-block;padding:.15rem .45rem;border:1px solid #444;border-radius:999px;color:#ddd;font-size:.8rem}
+  .wrap{word-break:break-word}
+</style>
 </head>
 <body>
-  <h1>同居匹配管理后台</h1>
+  <div class="container">
+    <h1>后台管理</h1>
 
-  <div class="toolbar">
-    <input id="token" type="password" placeholder="请输入管理员 Token" />
-    <button id="btnLoad" onclick="loadData()">加载数据</button>
-    <button id="btnDeleteSelected" class="danger" onclick="deleteSelected()" disabled>删除所选（0）</button>
+    <!-- 认证区 -->
+    <div class="card">
+      <div class="row">
+        <label class="nowrap" for="token">管理口令：</label>
+        <input id="token" type="password" placeholder="输入 ADMIN_TOKEN，例如 804" />
+        <button class="btn" id="saveToken">保存口令</button>
+        <span class="muted">也可在地址栏加 <code>?token=xxx</code> 自动填充</span>
+      </div>
+    </div>
+
+    <!-- 页签 -->
+    <div class="tabs" role="tablist" aria-label="数据类别">
+      <button class="tab" role="tab" id="tab-roommate" aria-selected="true" aria-controls="panel-roommate">同居匹配</button>
+      <button class="tab" role="tab" id="tab-recruit"  aria-selected="false" aria-controls="panel-recruit">招募申请</button>
+    </div>
+
+    <!-- 同居匹配 面板 -->
+    <section id="panel-roommate" class="card" role="tabpanel" aria-labelledby="tab-roommate">
+      <div class="toolbar">
+        <div class="left">
+          <button class="btn" id="reloadRoommate">刷新</button>
+          <button class="btn btn--danger" id="deleteSelected">删除所选</button>
+          <span class="muted" id="rmCount"></span>
+        </div>
+        <div class="muted">表：submissions/…</div>
+      </div>
+
+      <table class="table" id="roommateTable">
+        <thead>
+          <tr>
+            <th style="width:36px;"><input type="checkbox" id="checkAllRm"></th>
+            <th>昵称 / 联系</th>
+            <th>时段</th>
+            <th>玩法</th>
+            <th>语音/性别</th>
+            <th style="width:40%;">自我介绍</th>
+          </tr>
+        </thead>
+        <tbody id="roommateTbody">
+          <tr><td colspan="6" class="muted">未加载</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 招募申请 面板（只读） -->
+    <section id="panel-recruit" class="card" role="tabpanel" aria-labelledby="tab-recruit" hidden>
+      <div class="toolbar">
+        <div class="left">
+          <button class="btn" id="reloadRecruit">刷新</button>
+          <span class="muted" id="reCount"></span>
+        </div>
+        <div class="muted">表：recruits/…（只读）</div>
+      </div>
+
+      <table class="table" id="recruitTable">
+        <thead>
+          <tr>
+            <th>昵称 / 联系</th>
+            <th>生存等级</th>
+            <th>在线日</th>
+            <th>每日在线时长</th>
+            <th>建筑分</th>
+            <th style="width:40%;">备注</th>
+          </tr>
+        </thead>
+        <tbody id="recruitTbody">
+          <tr><td colspan="6" class="muted">未加载</td></tr>
+        </tbody>
+      </table>
+    </section>
   </div>
 
-  <div id="msg"></div>
+<script>
+  // ========== 基础 ==========
+  const API_BASE = '/api';
+  const qs = new URLSearchParams(location.search);
+  const $ = sel => document.querySelector(sel);
+  const $$ = sel => Array.from(document.querySelectorAll(sel));
 
-  <div style="overflow:auto; max-height:70vh; border:1px solid #444; border-radius:8px;">
-    <table id="dataTable" hidden>
-      <thead>
-        <tr>
-          <th class="nowrap">
-            <input type="checkbox" id="chkAll" onclick="toggleAll(this)" />
-            全选
-          </th>
-          <th>昵称</th>
-          <th>联系方式</th>
-          <th>时段</th>
-          <th>玩法</th>
-          <th>语音</th>
-          <th>性别</th>
-          <th>备注</th>
-          <th>时间</th>
-          <th>操作</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
+  // token 存储/读取
+  const tokenInput = $('#token');
+  const saved = localStorage.getItem('ADMIN_TOKEN') || qs.get('token') || '';
+  if (saved) tokenInput.value = saved;
 
-  <script>
-    const BASE = '/api';
-    let currentItems = [];           // 缓存列表
-    let selectedIds  = new Set();    // 选中集合
+  $('#saveToken').addEventListener('click', ()=>{
+    localStorage.setItem('ADMIN_TOKEN', tokenInput.value.trim());
+    alert('口令已保存到本地浏览器');
+  });
 
-    function setMsg(text) { document.getElementById("msg").textContent = text || ""; }
+  function authHeaders(){
+    const t = (tokenInput.value || '').trim();
+    return t ? { 'X-Admin-Token': t } : {};
+  }
 
-    function updateDeleteSelectedButton() {
-      const btn = document.getElementById("btnDeleteSelected");
-      const count = selectedIds.size;
-      btn.textContent = `删除所选（${count}）`;
-      btn.disabled = count === 0;
-    }
+  function humanTime(ts){
+    try {
+      const d = new Date(ts);
+      return isNaN(d) ? '' : d.toLocaleString();
+    } catch { return ''; }
+  }
 
-    function toggleAll(checkbox) {
-      selectedIds.clear();
-      if (checkbox.checked) {
-        currentItems.forEach(it => selectedIds.add(it.id));
-      }
-      // 同步行勾选
-      document.querySelectorAll('.row-check').forEach(cb => {
-        cb.checked = checkbox.checked;
-      });
-      updateDeleteSelectedButton();
-    }
+  // ========== 页签切换 ==========
+  const tabRoom = $('#tab-roommate');
+  const tabRecr = $('#tab-recruit');
+  const panelRoom = $('#panel-roommate');
+  const panelRecr = $('#panel-recruit');
 
-    function onRowCheckChanged(id, checked) {
-      if (checked) selectedIds.add(id);
-      else selectedIds.delete(id);
-      // 如果不是全部选中，则取消表头的全选
-      document.getElementById('chkAll').checked = (selectedIds.size === currentItems.length && currentItems.length > 0);
-      updateDeleteSelectedButton();
-    }
+  function selectTab(which){
+    const isRoom = which === 'room';
+    tabRoom.setAttribute('aria-selected', isRoom ? 'true' : 'false');
+    tabRecr.setAttribute('aria-selected', isRoom ? 'false' : 'true');
+    panelRoom.hidden = !isRoom;
+    panelRecr.hidden = isRoom;
+  }
+  tabRoom.addEventListener('click', ()=>selectTab('room'));
+  tabRecr.addEventListener('click', ()=>selectTab('recruit'));
 
-    async function loadData() {
-      const token = document.getElementById("token").value.trim();
-      if (!token) { alert("请输入 Token"); return; }
+  // ========== 同居匹配：加载与删除 ==========
+  async function loadRoommate(){
+    const tbody = $('#roommateTbody');
+    const count = $('#rmCount');
+    tbody.innerHTML = `<tr><td colspan="6" class="muted">加载中…</td></tr>`;
+    count.textContent = '';
 
-      setMsg("加载中…");
-      selectedIds.clear();
-      updateDeleteSelectedButton();
-      document.getElementById('chkAll').checked = false;
+    try{
+      const res = await fetch(`${API_BASE}/admin/list`, { headers: { 'Accept':'application/json', ...authHeaders() } });
+      if (res.status === 401) { tbody.innerHTML = `<tr><td colspan="6" class="muted">未授权，请先填写口令</td></tr>`; return; }
+      const json = await res.json();
+      if (!json.ok) { tbody.innerHTML = `<tr><td colspan="6" class="muted">加载失败</td></tr>`; return; }
 
-      try {
-        const res = await fetch(`${BASE}/admin/list`, {
-          headers: { "X-Admin-Token": token }
-        });
-        const json = await res.json();
+      const items = json.items || [];
+      count.textContent = `共 ${items.length} 条`;
 
-        if (!json.ok) {
-          setMsg("加载失败：" + (json.error || "未知错误"));
-          return;
-        }
-
-        const table = document.getElementById("dataTable");
-        const tbody = table.querySelector("tbody");
-        tbody.innerHTML = "";
-
-        currentItems = json.items || [];
-
-        currentItems.forEach(item => {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td class="nowrap">
-              <input type="checkbox" class="row-check" data-id="${item.id}" />
-            </td>
-            <td>${escapeHTML(item.nickname)}</td>
-            <td>${escapeHTML(item.contact)}</td>
-            <td>${escapeHTML((item.slots || []).join(", "))}</td>
-            <td>${escapeHTML((item.modes || []).join(", "))}</td>
-            <td>${item.voice ? "是" : "否"}</td>
-            <td>${escapeHTML(item.gender || "")}</td>
-            <td>${escapeHTML(item.note || "")}</td>
-            <td class="nowrap">${new Date(item.ts).toLocaleString()}</td>
-            <td><button class="danger" onclick="delItem('${item.id}')">删除</button></td>
-          `;
-          tbody.appendChild(tr);
-        });
-
-        // 绑定每行的复选框事件
-        tbody.querySelectorAll('.row-check').forEach(cb => {
-          cb.addEventListener('change', (e) => {
-            onRowCheckChanged(e.target.getAttribute('data-id'), e.target.checked);
-          });
-        });
-
-        table.hidden = false;
-        setMsg("加载完成，共 " + currentItems.length + " 条记录");
-      } catch (err) {
-        setMsg("网络错误：" + err);
-      }
-    }
-
-    async function delItem(id) {
-      const token = document.getElementById("token").value.trim();
-      if (!token) { alert("请先输入 Token"); return; }
-      if (!confirm("确定要删除这条记录吗？")) return;
-
-      try {
-        const res = await fetch(`${BASE}/admin/delete?id=${encodeURIComponent(id)}`, {
-          method: "DELETE",
-          headers: { "X-Admin-Token": token }
-        });
-        const json = await res.json();
-        if (json.ok) {
-          // 从缓存移除并刷新表格/选择状态
-          currentItems = currentItems.filter(it => it.id !== id);
-          selectedIds.delete(id);
-          updateDeleteSelectedButton();
-          loadData();
-        } else {
-          alert("删除失败：" + (json.error || "未知错误"));
-        }
-      } catch (err) {
-        alert("网络错误：" + err);
-      }
-    }
-
-    async function deleteSelected() {
-      const token = document.getElementById("token").value.trim();
-      if (!token) { alert("请先输入 Token"); return; }
-
-      const ids = Array.from(selectedIds);
-      if (ids.length === 0) return;
-
-      if (!confirm(`将删除所选 ${ids.length} 条记录，确定吗？`)) return;
-
-      // 禁用按钮避免重复操作
-      const btn = document.getElementById("btnDeleteSelected");
-      const oldText = btn.textContent;
-      btn.disabled = true;
-      btn.textContent = `删除中（${ids.length}）…`;
-
-      let success = 0, fail = 0;
-
-      for (const id of ids) {
-        try {
-          const res = await fetch(`${BASE}/admin/delete?id=${encodeURIComponent(id)}`, {
-            method: "DELETE",
-            headers: { "X-Admin-Token": token }
-          });
-          const json = await res.json();
-          if (json.ok) {
-            success++;
-            selectedIds.delete(id);
-          } else {
-            fail++;
-          }
-        } catch {
-          fail++;
-        }
+      if (!items.length){
+        tbody.innerHTML = `<tr><td colspan="6" class="muted">暂无数据</td></tr>`;
+        return;
       }
 
-      btn.disabled = false;
-      btn.textContent = oldText;
+      const esc = s => String(s||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
+      const toList = arr => Array.isArray(arr) ? arr.join(', ') : '';
 
-      setMsg(`批量删除完成：成功 ${success} 条，失败 ${fail} 条`);
-      // 重新载入数据
-      loadData();
-    }
+      tbody.innerHTML = items.map(it=>{
+        const id = esc(it.id);
+        return `
+          <tr data-id="${id}">
+            <td><input type="checkbox" class="ck"></td>
+            <td class="wrap"><div><strong>${esc(it.nickname)}</strong></div><div class="muted">${esc(it.contact)}</div><div class="muted">${humanTime(it.ts)}</div></td>
+            <td class="wrap">${esc(toList(it.slots))}</td>
+            <td class="wrap">${esc(toList(it.modes))}</td>
+            <td class="wrap">${it.voice ? '<span class="badge">语音</span>' : ''} ${esc(it.gender||'')}</td>
+            <td class="wrap">${esc(it.note)}</td>
+          </tr>
+        `;
+      }).join('');
 
-    function escapeHTML(str) {
-      return String(str)
-        .replaceAll('&','&amp;')
-        .replaceAll('<','&lt;')
-        .replaceAll('>','&gt;')
-        .replaceAll('"','&quot;')
-        .replaceAll("'","&#39;");
+      // 全选
+      const ckAll = $('#checkAllRm');
+      ckAll.checked = false;
+      ckAll.onchange = ()=> $$('#roommateTbody .ck').forEach(ck=>ck.checked = ckAll.checked);
+    }catch(e){
+      $('#roommateTbody').innerHTML = `<tr><td colspan="6" class="muted">网络错误</td></tr>`;
     }
-  </script>
+  }
+
+  // 批量删除（仅同居）
+  async function deleteSelected(){
+    const rows = $$('#roommateTbody tr');
+    const toDel = rows.filter(r => r.querySelector('.ck')?.checked).map(r => r.getAttribute('data-id'));
+    if (!toDel.length) { alert('请先勾选要删除的记录'); return; }
+    if (!confirm(`确认删除 ${toDel.length} 条记录？`)) return;
+
+    try{
+      for (const id of toDel){
+        await fetch(`${API_BASE}/admin/delete?id=${encodeURIComponent(id)}`, {
+          method:'DELETE',
+          headers:{ ...authHeaders() }
+        });
+      }
+      await loadRoommate();
+      alert('删除完成');
+    }catch(e){
+      alert('删除失败或网络错误');
+    }
+  }
+
+  $('#reloadRoommate').addEventListener('click', loadRoommate);
+  $('#deleteSelected').addEventListener('click', deleteSelected);
+
+  // ========== 招募申请：加载（只读） ==========
+  async function loadRecruit(){
+    const tbody = $('#recruitTbody');
+    const count = $('#reCount');
+    tbody.innerHTML = `<tr><td colspan="6" class="muted">加载中…</td></tr>`;
+    count.textContent = '';
+
+    try{
+      const res = await fetch(`${API_BASE}/admin/recruit/list`, { headers: { 'Accept':'application/json', ...authHeaders() } });
+      if (res.status === 401) { tbody.innerHTML = `<tr><td colspan="6" class="muted">未授权，请先填写口令</td></tr>`; return; }
+      const json = await res.json();
+      if (!json.ok) { tbody.innerHTML = `<tr><td colspan="6" class="muted">加载失败</td></tr>`; return; }
+
+      const items = json.items || [];
+      count.textContent = `共 ${items.length} 条`;
+
+      if (!items.length){
+        tbody.innerHTML = `<tr><td colspan="6" class="muted">暂无数据</td></tr>`;
+        return;
+      }
+
+      const esc = s => String(s||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
+      const toList = arr => Array.isArray(arr) ? arr.join(', ') : '';
+
+      tbody.innerHTML = items.map(it=>{
+        return `
+          <tr>
+            <td class="wrap"><div><strong>${esc(it.nickname)}</strong></div><div class="muted">${esc(it.contact)}</div><div class="muted">${humanTime(it.ts)}</div></td>
+            <td>${esc(it.survival)}</td>
+            <td>${esc(toList(it.days))}</td>
+            <td>${esc(it.hours)} 小时</td>
+            <td>${esc(it.build)}</td>
+            <td class="wrap">${esc(it.note)}</td>
+          </tr>
+        `;
+      }).join('');
+    }catch(e){
+      $('#recruitTbody').innerHTML = `<tr><td colspan="6" class="muted">网络错误</td></tr>`;
+    }
+  }
+  $('#reloadRecruit').addEventListener('click', loadRecruit);
+
+  // 初始加载：默认同居匹配
+  loadRoommate();
+</script>
 </body>
 </html>
