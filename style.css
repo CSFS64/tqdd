@@ -329,6 +329,18 @@ dialog.modal[open] {
   border-radius: 8px;
 }
 
+/* 默认显示图片 */
+.event__image {
+  display: block;
+}
+
+/* 小屏幕（手机）隐藏活动图片 */
+@media (max-width: 768px) {
+  .event__image {
+    display: none;
+  }
+}
+
 /* 活动详细信息 */
 .event__details {
   flex: 1;
