@@ -155,7 +155,7 @@ document.querySelectorAll('.event__toggle-description').forEach(button => {
   });
 });
 
-const LIST_ENDPOINT = 'https://tqdd-match.20060303jjc.workers.dev/list';
+const LIST_ENDPOINT = '/api/list';
 
 async function loadMatches() {
   const container = document.getElementById('matchEntries');
