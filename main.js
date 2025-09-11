@@ -159,13 +159,15 @@ document.querySelectorAll('.event__toggle-description').forEach(button => {
 const LIST_ENDPOINT = '/api/list';
 const VISIBLE_COUNT = 5; // 先展示几条
 
+const LIST_ENDPOINT = '/api/list';
+const VISIBLE_COUNT = 5;
+
 async function loadMatches() {
   const tbody = document.getElementById('matchTbody');
   const extra = document.getElementById('matchTbodyExtra');
   const toggle = document.getElementById('toggleMore');
-  const table  = document.getElementById('matchTable');
 
-  if (!tbody || !extra) return;
+  if (!tbody || !extra || !toggle) return;
 
   tbody.innerHTML = `<tr><td colspan="4" style="color:#999;">加载中…</td></tr>`;
   extra.innerHTML = '';
@@ -174,7 +176,7 @@ async function loadMatches() {
   toggle.textContent = '展开更多';
 
   try {
-    const res = await fetch(LIST_ENDPOINT, { headers: { 'Accept':'application/json' } });
+    const res = await fetch(LIST_ENDPOINT, { headers: { 'Accept': 'application/json' } });
     const json = await res.json();
 
     if (!json.ok || !Array.isArray(json.items)) {
@@ -183,66 +185,56 @@ async function loadMatches() {
     }
 
     const items = json.items;
-
     if (items.length === 0) {
       tbody.innerHTML = `<tr><td colspan="4" style="color:#999;">暂无申请</td></tr>`;
       return;
     }
 
-    // 渲染函数
-    const renderRow = (item) => {
+    const esc = (s) => String(s ?? '')
+      .replaceAll('&','&amp;').replaceAll('<','&lt;')
+      .replaceAll('>','&gt;').replaceAll('"','&quot;')
+      .replaceAll("'","&#39;");
+
+    // 生成一个表格行（带 data-label，方便小屏卡片化）
+    const makeRow = (it) => {
+      const slots = Array.isArray(it.slots) ? it.slots : [];
+      const slotsHTML = `<div class="slots-list">${
+        slots.map(s => `<span class="slot-chip">${esc(s)}</span>`).join('')
+      }</div>`;
       const tr = document.createElement('tr');
-      const slotsText = Array.isArray(item.slots) ? item.slots.join(', ') : '';
       tr.innerHTML = `
-        <td class="nickname">${escapeHTML(item.nickname || '')}</td>
-        <td class="contact">${escapeHTML(item.contact || '')}</td>
-        <td class="slots">${escapeHTML(slotsText)}</td>
-        <td class="note">${escapeHTML(item.note || '')}</td>
+        <td data-label="昵称" class="nickname"><strong>${esc(it.nickname || '')}</strong></td>
+        <td data-label="联系方式" class="contact">${esc(it.contact || '')}</td>
+        <td data-label="在线时段" class="slots">${slotsHTML}</td>
+        <td data-label="自我介绍" class="note">${esc(it.note || '')}</td>
       `;
       return tr;
     };
 
     // 先展示前 N 条
     tbody.innerHTML = '';
-    items.slice(0, VISIBLE_COUNT).forEach(item => tbody.appendChild(renderRow(item)));
+    items.slice(0, VISIBLE_COUNT).forEach(it => tbody.appendChild(makeRow(it)));
 
-    // 剩余的放到隐藏 tbody 里
+    // 剩余的放在隐藏区域，配合“展开更多”
     const rest = items.slice(VISIBLE_COUNT);
     if (rest.length > 0) {
       extra.innerHTML = '';
-      rest.forEach(item => extra.appendChild(renderRow(item)));
+      rest.forEach(it => extra.appendChild(makeRow(it)));
+      extra.hidden = true;
       toggle.hidden = false;
-
       toggle.onclick = () => {
         const expanded = toggle.dataset.expanded === 'true';
-        if (expanded) {
-          extra.hidden = true;
-          toggle.dataset.expanded = 'false';
-          toggle.textContent = '展开更多';
-        } else {
-          extra.hidden = false;
-          toggle.dataset.expanded = 'true';
-          toggle.textContent = '收起';
-          // 可选：滚动到按钮附近，避免展开后跳太远
-          toggle.scrollIntoView({ behavior:'smooth', block:'nearest' });
-        }
+        extra.hidden = expanded;
+        toggle.dataset.expanded = expanded ? 'false' : 'true';
+        toggle.textContent = expanded ? '展开更多' : '收起';
       };
     } else {
       toggle.hidden = true;
     }
-  } catch (err) {
+  } catch (e) {
     tbody.innerHTML = `<tr><td colspan="4" style="color:#999;">网络错误</td></tr>`;
   }
 }
 
-function escapeHTML(str) {
-  return String(str)
-    .replaceAll('&','&amp;')
-    .replaceAll('<','&lt;')
-    .replaceAll('>','&gt;')
-    .replaceAll('"','&quot;')
-    .replaceAll("'","&#39;");
-}
-
-// 页面加载时执行
+// 页面加载立即跑一次
 loadMatches();
