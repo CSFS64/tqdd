@@ -228,34 +228,41 @@
   $('#reloadRoommate').addEventListener('click', loadRoommate);
   $('#deleteSelected').addEventListener('click', deleteSelected);
 
-  // ========== 招募申请：加载（只读） ==========
+  // ========== 招募申请：加载（带多选） ==========
   async function loadRecruit(){
-    const tbody = $('#recruitTbody');
-    const count = $('#reCount');
-    tbody.innerHTML = `<tr><td colspan="6" class="muted">加载中…</td></tr>`;
+    const tbody = document.getElementById('recruitTbody');
+    const count = document.getElementById('reCount');
+    tbody.innerHTML = `<tr><td colspan="7" class="muted">加载中…</td></tr>`;
     count.textContent = '';
-
+  
     try{
-      const res = await fetch(`${API_BASE}/admin/recruit/list`, { headers: { 'Accept':'application/json', ...authHeaders() } });
-      if (res.status === 401) { tbody.innerHTML = `<tr><td colspan="6" class="muted">未授权，请先填写口令</td></tr>`; return; }
+      const res = await fetch(`${API_BASE}/admin/recruit/list`, {
+        headers: { 'Accept':'application/json', ...authHeaders() }
+      });
+      if (res.status === 401) { tbody.innerHTML = `<tr><td colspan="7" class="muted">未授权，请先填写口令</td></tr>`; return; }
       const json = await res.json();
-      if (!json.ok) { tbody.innerHTML = `<tr><td colspan="6" class="muted">加载失败</td></tr>`; return; }
-
+      if (!json.ok) { tbody.innerHTML = `<tr><td colspan="7" class="muted">加载失败</td></tr>`; return; }
+  
       const items = json.items || [];
       count.textContent = `共 ${items.length} 条`;
-
+  
       if (!items.length){
-        tbody.innerHTML = `<tr><td colspan="6" class="muted">暂无数据</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="muted">暂无数据</td></tr>`;
         return;
       }
-
+  
       const esc = s => String(s||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
       const toList = arr => Array.isArray(arr) ? arr.join(', ') : '';
-
+  
       tbody.innerHTML = items.map(it=>{
         return `
-          <tr>
-            <td class="wrap"><div><strong>${esc(it.nickname)}</strong></div><div class="muted">${esc(it.contact)}</div><div class="muted">${humanTime(it.ts)}</div></td>
+          <tr data-id="${esc(it.id)}">
+            <td><input type="checkbox" class="ck-re"></td>
+            <td class="wrap">
+              <div><strong>${esc(it.nickname)}</strong></div>
+              <div class="muted">${esc(it.contact)}</div>
+              <div class="muted">${humanTime(it.ts)}</div>
+            </td>
             <td>${esc(it.survival)}</td>
             <td>${esc(toList(it.days))}</td>
             <td>${esc(it.hours)} 小时</td>
@@ -264,10 +271,47 @@
           </tr>
         `;
       }).join('');
+  
+      // 全选
+      const ckAllRe = document.getElementById('checkAllRe');
+      ckAllRe.checked = false;
+      ckAllRe.onchange = () => {
+        document.querySelectorAll('#recruitTbody .ck-re').forEach(ck => ck.checked = ckAllRe.checked);
+      };
     }catch(e){
-      $('#recruitTbody').innerHTML = `<tr><td colspan="6" class="muted">网络错误</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="7" class="muted">网络错误</td></tr>`;
     }
   }
+  
+  // ========== 招募申请：批量删除 ==========
+  async function deleteSelectedRecruit(){
+    const rows = Array.from(document.querySelectorAll('#recruitTbody tr'));
+    const toDel = rows
+      .filter(r => r.querySelector('.ck-re')?.checked)
+      .map(r => r.getAttribute('data-id'))
+      .filter(Boolean);
+  
+    if (!toDel.length) { alert('请先勾选要删除的记录'); return; }
+    if (!confirm(`确认删除 ${toDel.length} 条招募申请？`)) return;
+  
+    try{
+      for (const id of toDel){
+        await fetch(`${API_BASE}/admin/recruit/delete?id=${encodeURIComponent(id)}`, {
+          method: 'DELETE',
+          headers: { ...authHeaders() }
+        });
+      }
+      await loadRecruit();
+      alert('删除完成');
+    }catch(e){
+      alert('删除失败或网络错误');
+    }
+  }
+  
+  // 绑定按钮
+  document.getElementById('reloadRecruit').addEventListener('click', loadRecruit);
+  document.getElementById('deleteSelectedRe').addEventListener('click', deleteSelectedRecruit);
+
   $('#reloadRecruit').addEventListener('click', loadRecruit);
 
   // 初始加载：默认同居匹配
