@@ -155,36 +155,94 @@ document.querySelectorAll('.event__toggle-description').forEach(button => {
   });
 });
 
+// 展示已有申请
 const LIST_ENDPOINT = '/api/list';
+const VISIBLE_COUNT = 5; // 先展示几条
 
 async function loadMatches() {
-  const container = document.getElementById('matchEntries');
-  if (!container) return;
-  container.innerHTML = '<p style="color:#999;">加载中…</p>';
+  const tbody = document.getElementById('matchTbody');
+  const extra = document.getElementById('matchTbodyExtra');
+  const toggle = document.getElementById('toggleMore');
+  const table  = document.getElementById('matchTable');
+
+  if (!tbody || !extra) return;
+
+  tbody.innerHTML = `<tr><td colspan="4" style="color:#999;">加载中…</td></tr>`;
+  extra.innerHTML = '';
+  toggle.hidden = true;
+  toggle.dataset.expanded = 'false';
+  toggle.textContent = '展开更多';
 
   try {
-    const res = await fetch(LIST_ENDPOINT, { headers: { 'Accept': 'application/json' } });
+    const res = await fetch(LIST_ENDPOINT, { headers: { 'Accept':'application/json' } });
     const json = await res.json();
 
-    if (json.ok && Array.isArray(json.items)) {
-      if (json.items.length === 0) {
-        container.innerHTML = '<p style="color:#999;">暂无申请</p>';
-      } else {
-        container.innerHTML = '';
-        json.items.forEach(item => {
-          const div = document.createElement('div');
-          div.className = 'match-entry';
-          div.innerHTML = `<strong>${item.nickname}</strong> — ${item.contact}`;
-          container.appendChild(div);
-        });
-      }
+    if (!json.ok || !Array.isArray(json.items)) {
+      tbody.innerHTML = `<tr><td colspan="4" style="color:#999;">加载失败</td></tr>`;
+      return;
+    }
+
+    const items = json.items;
+
+    if (items.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="4" style="color:#999;">暂无申请</td></tr>`;
+      return;
+    }
+
+    // 渲染函数
+    const renderRow = (item) => {
+      const tr = document.createElement('tr');
+      const slotsText = Array.isArray(item.slots) ? item.slots.join(', ') : '';
+      tr.innerHTML = `
+        <td class="nickname">${escapeHTML(item.nickname || '')}</td>
+        <td class="contact">${escapeHTML(item.contact || '')}</td>
+        <td class="slots">${escapeHTML(slotsText)}</td>
+        <td class="note">${escapeHTML(item.note || '')}</td>
+      `;
+      return tr;
+    };
+
+    // 先展示前 N 条
+    tbody.innerHTML = '';
+    items.slice(0, VISIBLE_COUNT).forEach(item => tbody.appendChild(renderRow(item)));
+
+    // 剩余的放到隐藏 tbody 里
+    const rest = items.slice(VISIBLE_COUNT);
+    if (rest.length > 0) {
+      extra.innerHTML = '';
+      rest.forEach(item => extra.appendChild(renderRow(item)));
+      toggle.hidden = false;
+
+      toggle.onclick = () => {
+        const expanded = toggle.dataset.expanded === 'true';
+        if (expanded) {
+          extra.hidden = true;
+          toggle.dataset.expanded = 'false';
+          toggle.textContent = '展开更多';
+        } else {
+          extra.hidden = false;
+          toggle.dataset.expanded = 'true';
+          toggle.textContent = '收起';
+          // 可选：滚动到按钮附近，避免展开后跳太远
+          toggle.scrollIntoView({ behavior:'smooth', block:'nearest' });
+        }
+      };
     } else {
-      container.innerHTML = '<p style="color:#999;">加载失败</p>';
+      toggle.hidden = true;
     }
   } catch (err) {
-    container.innerHTML = '<p style="color:#999;">网络错误</p>';
+    tbody.innerHTML = `<tr><td colspan="4" style="color:#999;">网络错误</td></tr>`;
   }
 }
 
-// 页面加载时立即执行
+function escapeHTML(str) {
+  return String(str)
+    .replaceAll('&','&amp;')
+    .replaceAll('<','&lt;')
+    .replaceAll('>','&gt;')
+    .replaceAll('"','&quot;')
+    .replaceAll("'","&#39;");
+}
+
+// 页面加载时执行
 loadMatches();
