@@ -450,3 +450,56 @@ dialog.modal[open] {
   padding: 1rem;
   background: #1b1b1b;
 }
+
+/* 外层容器：允许横向滚动（手机端可左右滑动） */
+.table-wrapper{
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch; /* iOS 惯性滚动 */
+  position: relative;
+}
+
+/* 表格保持桌面布局；设置一个最小宽度，触发横向滚动 */
+.match-table{
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 860px; /* 可按列多少调整，比如 860/960/1040px */
+}
+
+/* 单元格常规样式 */
+.match-table th,
+.match-table td{
+  padding: .6rem .75rem;
+  border-top: 1px solid #333;       /* 依你站点风格调整 */
+  text-align: left;
+  vertical-align: top;
+  white-space: nowrap;               /* 不换行，列宽由内容决定，从而触发横向滚动 */
+}
+
+/* 表头视觉 */
+.match-table thead th{
+  background: #1b1b1b;              /* 依你站点配色 */
+  position: sticky;                  /* 可选：手机横向滚动时，表头仍固定在顶部 */
+  top: 0;
+  z-index: 1;
+}
+
+/* 如果你之前写过“把表格变卡片”的响应式样式，这里强制覆盖回 table 布局 */
+@media (max-width: 900px){
+  .match-table{ display: table; }
+  .match-table thead{ display: table-header-group; }
+  .match-table tbody{ display: table-row-group; }
+  .match-table tr{ display: table-row; }
+  .match-table th,
+  .match-table td{ display: table-cell; }
+}
+
+/* 可选：右侧小提示渐变（暗示可横向滑动） */
+.table-wrapper::after{
+  content: "";
+  position: absolute;
+  right: 0; top: 0; bottom: 0;
+  width: 24px;
+  pointer-events: none;
+  background: linear-gradient(to left, rgba(0,0,0,.35), rgba(0,0,0,0));
+}
