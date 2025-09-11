@@ -389,3 +389,29 @@ dialog.modal[open] {
   background-color: #0056b3;
 }
 
+.match-list {
+  margin-top: 1.5rem;
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 1rem;
+  background: #1b1b1b;
+  max-height: 220px;   /* 高度限制，避免太长 */
+  overflow-y: auto;    /* 内置滚动条 */
+}
+
+.match-list h3 {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  font-size: 1.2rem;
+  color: #ffdd57;
+}
+
+.match-entry {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #333;
+  font-size: 0.95rem;
+}
+
+.match-entry:last-child {
+  border-bottom: none;
+}
