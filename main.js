@@ -159,12 +159,9 @@ document.querySelectorAll('.event__toggle-description').forEach(button => {
 const LIST_ENDPOINT = '/api/list';
 const VISIBLE_COUNT = 5; // 先展示几条
 
-const LIST_ENDPOINT = '/api/list';
-const VISIBLE_COUNT = 5;
-
 async function loadMatches() {
-  const tbody = document.getElementById('matchTbody');
-  const extra = document.getElementById('matchTbodyExtra');
+  const tbody  = document.getElementById('matchTbody');
+  const extra  = document.getElementById('matchTbodyExtra');
   const toggle = document.getElementById('toggleMore');
 
   if (!tbody || !extra || !toggle) return;
@@ -176,7 +173,7 @@ async function loadMatches() {
   toggle.textContent = '展开更多';
 
   try {
-    const res = await fetch(LIST_ENDPOINT, { headers: { 'Accept': 'application/json' } });
+    const res  = await fetch(LIST_ENDPOINT, { headers: { 'Accept': 'application/json' } });
     const json = await res.json();
 
     if (!json.ok || !Array.isArray(json.items)) {
@@ -222,6 +219,7 @@ async function loadMatches() {
       rest.forEach(it => extra.appendChild(makeRow(it)));
       extra.hidden = true;
       toggle.hidden = false;
+
       toggle.onclick = () => {
         const expanded = toggle.dataset.expanded === 'true';
         extra.hidden = expanded;
@@ -233,6 +231,7 @@ async function loadMatches() {
     }
   } catch (e) {
     tbody.innerHTML = `<tr><td colspan="4" style="color:#999;">网络错误</td></tr>`;
+    // console.error(e); // 调试时可打开
   }
 }
 
