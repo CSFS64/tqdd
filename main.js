@@ -160,42 +160,43 @@ const LIST_ENDPOINT = '/api/list';
 const VISIBLE_COUNT = 5; // 先展示几条
 
 async function loadMatches() {
-  const tbody = document.getElementById('matchTbody');
-  const extra = document.getElementById('matchTbodyExtra');
+  const tbody  = document.getElementById('matchTbody');
+  const extra  = document.getElementById('matchTbodyExtra');
   const toggle = document.getElementById('toggleMore');
   const table  = document.getElementById('matchTable');
 
   if (!tbody || !extra) return;
 
-  tbody.innerHTML = `<tr><td colspan="4" style="color:#999;">加载中…</td></tr>`;
+  tbody.innerHTML = `<tr><td colspan="5" style="color:#999;">加载中…</td></tr>`;
   extra.innerHTML = '';
-  toggle.hidden = true;
-  toggle.dataset.expanded = 'false';
-  toggle.textContent = '展开更多';
+  if (toggle) {
+    toggle.hidden = true;
+    toggle.dataset.expanded = 'false';
+    toggle.textContent = '展开更多';
+  }
 
   try {
-    const res = await fetch(LIST_ENDPOINT, { headers: { 'Accept':'application/json' } });
+    const res  = await fetch(LIST_ENDPOINT, { headers: { 'Accept':'application/json' } });
     const json = await res.json();
 
     if (!json.ok || !Array.isArray(json.items)) {
-      tbody.innerHTML = `<tr><td colspan="4" style="color:#999;">加载失败</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="5" style="color:#999;">加载失败</td></tr>`;
       return;
     }
 
     const items = json.items;
-
     if (items.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="4" style="color:#999;">暂无申请</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="5" style="color:#999;">暂无申请</td></tr>`;
       return;
     }
 
-    // 渲染函数
     const renderRow = (item) => {
       const tr = document.createElement('tr');
       const slotsText = Array.isArray(item.slots) ? item.slots.join(', ') : '';
       tr.innerHTML = `
         <td class="nickname">${escapeHTML(item.nickname || '')}</td>
         <td class="contact">${escapeHTML(item.contact || '')}</td>
+        <td class="gender">${escapeHTML(item.gender || '')}</td> <!-- 新增性别 -->
         <td class="slots">${escapeHTML(slotsText)}</td>
         <td class="note">${escapeHTML(item.note || '')}</td>
       `;
@@ -208,7 +209,7 @@ async function loadMatches() {
 
     // 剩余的放到隐藏 tbody 里
     const rest = items.slice(VISIBLE_COUNT);
-    if (rest.length > 0) {
+    if (rest.length > 0 && toggle) {
       extra.innerHTML = '';
       rest.forEach(item => extra.appendChild(renderRow(item)));
       toggle.hidden = false;
@@ -223,15 +224,14 @@ async function loadMatches() {
           extra.hidden = false;
           toggle.dataset.expanded = 'true';
           toggle.textContent = '收起';
-          // 可选：滚动到按钮附近，避免展开后跳太远
           toggle.scrollIntoView({ behavior:'smooth', block:'nearest' });
         }
       };
-    } else {
+    } else if (toggle) {
       toggle.hidden = true;
     }
   } catch (err) {
-    tbody.innerHTML = `<tr><td colspan="4" style="color:#999;">网络错误</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5" style="color:#999;">网络错误</td></tr>`;
   }
 }
 
