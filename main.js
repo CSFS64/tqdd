@@ -159,6 +159,40 @@ document.querySelectorAll('.event__toggle-description').forEach(button => {
 const LIST_ENDPOINT = '/api/list';
 const VISIBLE_COUNT = 5; // 先展示几条
 
+// 性别映射 → 中文
+const genderMap = {
+  'male': '男',
+  'female': '女',
+  'non-binary': '非二元',
+  'transgender': '跨性别',
+  'genderqueer': '性别酷儿',
+  'other': '其他'
+};
+
+// 在线时段映射 → 中文
+const slotsMap = {
+  'weekday': '工作日',
+  'weekend': '周末',
+  'morning': '早晨',
+  'afternoon': '下午',
+  'evening': '晚上',
+  'night': '夜晚'
+};
+
+function escapeHTML(str) {
+  return String(str ?? '')
+    .replaceAll('&','&amp;')
+    .replaceAll('<','&lt;')
+    .replaceAll('>','&gt;')
+    .replaceAll('"','&quot;')
+    .replaceAll("'","&#39;");
+}
+
+function slotsToChinese(slots){
+  if (!Array.isArray(slots)) return '';
+  return slots.map(s => slotsMap[s] || s).join('、');
+}
+
 async function loadMatches() {
   const tbody  = document.getElementById('matchTbody');
   const extra  = document.getElementById('matchTbodyExtra');
