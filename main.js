@@ -93,6 +93,37 @@ document.addEventListener('click', () => {
   if (video && video.paused) video.play().catch(() => {});
 }, { once: true });
 
+// 折叠面板展开/收起
+document.querySelectorAll('.collapsible__toggle').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const content = btn.nextElementSibling;
+    const arrow = btn.querySelector('.arrow');
+    const expanded = btn.classList.contains('active');
+
+    if (expanded) {
+      btn.classList.remove('active');
+      arrow.textContent = '▶';
+      content.style.maxHeight = null;
+    } else {
+      // 如果需要手风琴效果：先关闭其他的
+      document.querySelectorAll('.collapsible__toggle.active').forEach(other => {
+        other.classList.remove('active');
+        other.querySelector('.arrow').textContent = '▶';
+        other.nextElementSibling.style.maxHeight = null;
+      });
+
+      btn.classList.add('active');
+      arrow.textContent = '▼';
+      content.style.maxHeight = content.scrollHeight + 'px';
+    }
+  });
+});
+
+// 点击“进行交易”跳转
+document.getElementById("tradeBtn").addEventListener("click", function () {
+  window.open("trade.html", "_blank");
+});
+
 // 更新倒计时
 function updateCountdowns() {
   const events = document.querySelectorAll('.event');
