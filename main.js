@@ -93,37 +93,6 @@ document.addEventListener('click', () => {
   if (video && video.paused) video.play().catch(() => {});
 }, { once: true });
 
-// 折叠面板展开/收起
-document.querySelectorAll('.collapsible__toggle').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const content = btn.nextElementSibling;
-    const arrow = btn.querySelector('.arrow');
-    const expanded = btn.classList.contains('active');
-
-    if (expanded) {
-      btn.classList.remove('active');
-      arrow.textContent = '▶';
-      content.style.maxHeight = null;
-    } else {
-      // 如果需要手风琴效果：先关闭其他的
-      document.querySelectorAll('.collapsible__toggle.active').forEach(other => {
-        other.classList.remove('active');
-        other.querySelector('.arrow').textContent = '▶';
-        other.nextElementSibling.style.maxHeight = null;
-      });
-
-      btn.classList.add('active');
-      arrow.textContent = '▼';
-      content.style.maxHeight = content.scrollHeight + 'px';
-    }
-  });
-});
-
-// 点击“进行交易”跳转
-document.getElementById("tradeBtn").addEventListener("click", function () {
-  window.open("trade.html", "_blank");
-});
-
 // 更新倒计时
 function updateCountdowns() {
   const events = document.querySelectorAll('.event');
@@ -292,3 +261,62 @@ async function loadMatches() {
 
 // 页面加载时执行
 loadMatches();
+
+document.addEventListener('DOMContentLoaded', () => {
+  // 折叠面板展开/收起（手风琴：一次只展开一个）
+  const toggles = document.querySelectorAll('.collapsible__toggle');
+
+  toggles.forEach(btn => {
+    const content = btn.nextElementSibling;
+    const arrow   = btn.querySelector('.arrow');
+
+    // 初始为收起
+    btn.classList.remove('active');
+    btn.setAttribute('aria-expanded', 'false');
+    if (content) content.style.maxHeight = '0px';
+
+    btn.addEventListener('click', () => {
+      const isOpen = btn.classList.contains('active');
+
+      // 手风琴：先关闭其他已展开的
+      document.querySelectorAll('.collapsible__toggle.active').forEach(other => {
+        if (other === btn) return;
+        other.classList.remove('active');
+        other.setAttribute('aria-expanded', 'false');
+        const otherArrow = other.querySelector('.arrow');
+        const otherContent = other.nextElementSibling;
+        if (otherArrow) otherArrow.textContent = '▶';
+        if (otherContent) otherContent.style.maxHeight = '0px';
+      });
+
+      if (isOpen) {
+        // 关闭自己
+        btn.classList.remove('active');
+        btn.setAttribute('aria-expanded', 'false');
+        if (arrow) arrow.textContent = '▶';
+        if (content) content.style.maxHeight = '0px';
+      } else {
+        // 展开自己
+        btn.classList.add('active');
+        btn.setAttribute('aria-expanded', 'true');
+        if (arrow) arrow.textContent = '▼';
+        if (content) {
+          // 先清零再取 scrollHeight，确保动画准确
+          content.style.maxHeight = '0px';
+          // 下一帧设置为内容高度，触发过渡动画
+          requestAnimationFrame(() => {
+            content.style.maxHeight = content.scrollHeight + 'px';
+          });
+        }
+      }
+    });
+  });
+
+  // 点击“进行交易”跳转
+  const tradeBtn = document.getElementById('tradeBtn');
+  if (tradeBtn) {
+    tradeBtn.addEventListener('click', () => {
+      window.open('trade.html', '_blank');
+    });
+  }
+});
