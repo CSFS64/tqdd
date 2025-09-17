@@ -496,7 +496,7 @@ dialog.modal[open] {
   z-index: 1;
 }
 
-/* 折叠面板样式 */
+/* 折叠面板容器 */
 .collapsible {
   margin: 1rem 0;
   border: 1px solid #333;
@@ -505,6 +505,7 @@ dialog.modal[open] {
   background: #1b1b1b;
 }
 
+/* 标题按钮 */
 .collapsible__toggle {
   width: 100%;
   text-align: left;
@@ -517,27 +518,27 @@ dialog.modal[open] {
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: .5rem;
 }
+.collapsible__toggle:hover { background: rgba(255,255,255,.05); }
 
-.collapsible__toggle:hover {
-  background: rgba(255, 255, 255, 0.05);
-}
-
+/* 默认收起：关键三行 */
 .collapsible__content {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.3s ease;
-  padding: 0 1rem;
+  transition: max-height .3s ease;
+  padding: 0 1rem; /* 内容左右内边距 */
 }
 
+/* 展开后内容的段落 */
 .collapsible__content p {
-  margin: 0.75rem 0;
-  font-size: 0.95rem;
+  margin: .75rem 0;
+  font-size: .95rem;
   line-height: 1.6;
 }
 
+/* 小箭头 */
 .arrow {
-  font-size: 0.9rem;
-  transition: transform 0.3s ease;
+  font-size: .9rem;
+  transition: transform .3s ease;
 }
