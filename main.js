@@ -1,7 +1,6 @@
 // 顶部年份
 document.getElementById('y').textContent = new Date().getFullYear();
 
-// 滚动时让导航加深背景（SpaceX 风）
 const nav = document.getElementById('nav');
 const onScroll = () => {
   if (window.scrollY > 10) nav.classList.add('scrolled');
@@ -15,7 +14,6 @@ const burger = document.getElementById('burger');
 const drawer = document.getElementById('drawer');
 drawer?.removeAttribute('hidden');
 
-// ✅ 统一用函数切换 hidden/aria
 function setDrawer(open){
   if (!drawer || !burger) return;
   burger.setAttribute('aria-expanded', String(open));
@@ -23,7 +21,6 @@ function setDrawer(open){
   else drawer.classList.remove('open');
 }
 
-// 初始：移动端关闭，桌面端确保关闭
 setDrawer(false);
 
 if (burger && drawer) {
@@ -31,27 +28,25 @@ if (burger && drawer) {
     const open = burger.getAttribute('aria-expanded') === 'true';
     setDrawer(!open);
   });
-  // 点击链接关闭
   drawer.querySelectorAll('a').forEach(a =>
     a.addEventListener('click', () => setDrawer(false))
   );
 }
 
-// ✅ 视口变化守卫：切到桌面强制关闭；回到移动端保持关闭初始态
 const MQ = window.matchMedia('(min-width: 901px)');
 function handleViewportChange(){
   if (MQ.matches){
-    // 桌面：保证抽屉关闭
+    // 桌面：清除菜单栏
     setDrawer(false);
   } else {
-    // 移动：保持默认关闭（不强制打开，避免“刷新即展开”）
+    // 移动：菜单栏保持默认关闭
     setDrawer(false);
   }
 }
 handleViewportChange();
 MQ.addEventListener?.('change', handleViewportChange);
 
-// 背景视频策略：若用户偏好减少动态，则暂停；否则尝试播放
+// 背景视频策略
 const video = document.getElementById('bg-video');
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 function handleMotionPref() {
@@ -60,10 +55,9 @@ function handleMotionPref() {
     video.removeAttribute('autoplay');
     video.pause();
   } else {
-    // iOS/移动端必须 muted + playsinline 才能自动播放
     video.muted = true;
     video.play().catch(() => {
-      // 自动播放失败时，允许用户点击首屏任意处开始
+      // 自动播放失败时点击任意处开始
       const once = () => { video.play().finally(() => document.removeEventListener('click', once)); };
       document.addEventListener('click', once, { once: true });
     });
@@ -72,7 +66,7 @@ function handleMotionPref() {
 handleMotionPref();
 prefersReducedMotion.addEventListener?.('change', handleMotionPref);
 
-// 可选：滚动观察，高亮当前区块的导航（桌面）
+// 高亮当前区块的导航
 const links = [...document.querySelectorAll('.nav__links a')];
 const sections = links.map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
 if ('IntersectionObserver' in window && links.length) {
@@ -99,12 +93,12 @@ document.addEventListener('click', () => {
   if (video && video.paused) video.play().catch(() => {});
 }, { once: true });
 
-// 更新倒计时，计算剩余时间并根据活动类型更新
+// 更新倒计时
 function updateCountdowns() {
   const events = document.querySelectorAll('.event');
   events.forEach(event => {
     const countdownElement = event.querySelector('.countdown');
-    const startTime = new Date(event.getAttribute('data-start-time')); // 直接获取北京时间的活动开始时间
+    const startTime = new Date(event.getAttribute('data-start-time'));
     const repeat = event.getAttribute('data-repeat') === 'true';
 
     // 获取当前时间（北京时间）
@@ -115,11 +109,11 @@ function updateCountdowns() {
 
     if (timeRemaining < 0) {
       if (repeat) {
-        // 如果活动是每天重复，则重新计算倒计时
-        const oneDay = 24 * 60 * 60 * 1000;  // 一天的毫秒数
-        timeRemaining = oneDay - (now % oneDay); // 从当前时间开始的下一天
+        // 为每天重复的活动重新计算倒计时
+        const oneDay = 24 * 60 * 60 * 1000;
+        timeRemaining = oneDay - (now % oneDay);
       } else {
-        timeRemaining = 0; // 如果活动不是重复的，倒计时归零
+        timeRemaining = 0; // 归零不重复活动的倒计时
       }
     }
 
@@ -137,20 +131,20 @@ function updateCountdowns() {
 // 每秒更新一次倒计时
 setInterval(updateCountdowns, 1000);
 
-// 页面加载时立即执行一次
+// 页面加载时立即执行
 updateCountdowns();
 
 document.querySelectorAll('.event__toggle-description').forEach(button => {
   button.addEventListener('click', function() {
     const eventDescription = this.closest('.event').querySelector('.event__description');
-    const isExpanded = eventDescription.style.maxHeight !== '0px'; // 检查是否已经展开
+    const isExpanded = eventDescription.style.maxHeight !== '0px';
     
     if (isExpanded) {
-      eventDescription.style.maxHeight = '0'; // 收起
-      this.textContent = '展开介绍'; // 改变按钮文本为“展开介绍”
+      eventDescription.style.maxHeight = '0';
+      this.textContent = '展开介绍';
     } else {
-      eventDescription.style.maxHeight = eventDescription.scrollHeight + 'px'; // 展开
-      this.textContent = '收起介绍'; // 改变按钮文本为“收起介绍”
+      eventDescription.style.maxHeight = eventDescription.scrollHeight + 'px';
+      this.textContent = '收起介绍';
     }
   });
 });
@@ -159,7 +153,7 @@ document.querySelectorAll('.event__toggle-description').forEach(button => {
 const LIST_ENDPOINT = '/api/list';
 const VISIBLE_COUNT = 5; // 先展示几条
 
-// 性别映射 → 中文
+// 性别映射中文
 const genderMap = {
   'male': '男',
   'female': '女',
@@ -169,7 +163,7 @@ const genderMap = {
   'other': '其他'
 };
 
-// 在线时段映射 → 中文
+// 在线时段映射
 const slotsMap = {
   'weekday': '工作日',
   'weekend': '周末',
@@ -224,7 +218,6 @@ async function loadMatches() {
       return;
     }
 
-    // 生成一行（性别/时段中文化）
     const renderRow = (item) => {
       const tr = document.createElement('tr');
       const genderText = genderMap[item.gender] || '未填写';
@@ -240,11 +233,10 @@ async function loadMatches() {
       return tr;
     };
 
-    // 先展示前 N 条
     tbody.innerHTML = '';
     items.slice(0, VISIBLE_COUNT).forEach(item => tbody.appendChild(renderRow(item)));
 
-    // 剩余的放到隐藏 tbody 里
+    // 隐藏条目
     const rest = items.slice(VISIBLE_COUNT);
     if (rest.length > 0 && toggle) {
       extra.innerHTML = '';
