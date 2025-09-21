@@ -543,7 +543,17 @@ dialog.modal[open] {
   transition: transform .3s ease;
 }
 
-/* ========== 议程：标签 + 滑动面板 ========== */
+/* ========== 议程 ========== */
+.agenda-title a{
+  text-decoration: underline;
+  color: #fff;
+  cursor: pointer;
+}
+.agenda-title a:hover{
+  opacity: .9;
+  text-decoration: underline;
+}
+
 .agenda-tabs{
   display:flex;
   gap:.5rem;
