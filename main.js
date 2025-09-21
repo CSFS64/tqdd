@@ -321,143 +321,159 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// ===== 议程：从后台加载并渲染 =====
-(async function loadAgenda() {
+// ===== 议程：从接口拉数据并渲染 =====
+(function initAgendaFromApi(){
+  const AGENDA_LIST_ENDPOINT = '/api/agenda/list';
+
   const tabsWrap   = document.getElementById('agendaTabs');
   const panelsWrap = document.getElementById('agendaPanels');
   const statusEl   = document.getElementById('agendaStatus');
+
   if (!tabsWrap || !panelsWrap) return;
 
-  // 小工具
+  // 工具：安全文本
   const esc = (s) => String(s ?? '')
     .replaceAll('&','&amp;').replaceAll('<','&lt;')
     .replaceAll('>','&gt;').replaceAll('"','&quot;')
     .replaceAll("'","&#39;");
 
-  function humanDeadline(tsOrStr){
-    // 后台如果是时间戳/ISO 都尽量转成人类可读
-    try {
-      const d = new Date(tsOrStr);
-      if (!isNaN(d)) return d.toLocaleString();
-    } catch {}
-    return esc(tsOrStr ?? '');
-  }
+  // 渲染：标签 + 面板
+  function render(items){
+    tabsWrap.innerHTML   = '';
+    panelsWrap.innerHTML = '';
+    statusEl.textContent = '';
 
-  // 显示加载中
-  statusEl.textContent = '加载中…';
-
-  let items = [];
-  try {
-    const res = await fetch('/api/agenda/list', { headers: { 'Accept': 'application/json' } });
-    const json = await res.json();
-    if (json?.ok && Array.isArray(json.items)) {
-      items = json.items;
-    } else {
-      statusEl.textContent = '加载失败';
+    if (!Array.isArray(items) || items.length === 0){
+      statusEl.textContent = '暂无议程';
       return;
     }
-  } catch (e) {
-    statusEl.textContent = '网络错误';
-    return;
+
+    items.forEach((it, idx) => {
+      const idTab   = `ag-tab-${idx+1}`;
+      const idPanel = `ag-panel-${idx+1}`;
+      const tagText = (Array.isArray(it.tags) && it.tags[0]) ? it.tags[0] : (it.tag || it.title || `议程 ${idx+1}`);
+
+      // 标签
+      const btn = document.createElement('button');
+      btn.className = 'agenda-tab' + (idx === 0 ? ' is-active' : '');
+      btn.id = idTab;
+      btn.setAttribute('role','tab');
+      btn.setAttribute('aria-controls', idPanel);
+      btn.setAttribute('aria-selected', idx === 0 ? 'true' : 'false');
+      btn.textContent = tagText;
+      tabsWrap.appendChild(btn);
+
+      // 面板
+      const art = document.createElement('article');
+      art.className = 'agenda-panel' + (idx === 0 ? ' is-active' : '');
+      art.id = idPanel;
+      art.setAttribute('role','tabpanel');
+      art.setAttribute('aria-labelledby', idTab);
+
+      // 友好显示截止日期
+      let deadlineLine = '';
+      if (it.deadline && Number(it.deadline)) {
+        const d = new Date(Number(it.deadline));
+        if (!isNaN(d)) {
+          const mm = String(d.getMonth()+1).padStart(2,'0');
+          const dd = String(d.getDate()).padStart(2,'0');
+          const hh = String(d.getHours()).padStart(2,'0');
+          const mi = String(d.getMinutes()).padStart(2,'0');
+          deadlineLine = ` · 截止：${mm}/${dd} ${hh}:${mi}`;
+        }
+      }
+
+      // 可选跳转链接（你在创建议程时有传 url 字段的话优先使用）
+      const href = (it.url && typeof it.url === 'string') ? it.url : `agenda/detail.html?id=${encodeURIComponent(it.id)}`;
+
+      art.innerHTML = `
+        <h3 class="agenda-title">
+          <a href="${esc(href)}" target="_blank" rel="noopener">${esc(it.title || '未命名议程')}</a>
+        </h3>
+        <p class="agenda-meta">提交人：${esc(it.author || '管理员')}${deadlineLine}</p>
+        <p>${esc(it.desc || '')}</p>
+      `;
+      panelsWrap.appendChild(art);
+
+      // 事件绑定
+      btn.addEventListener('click', () => activate(idx));
+      btn.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') activate(Math.min(idx+1, items.length-1));
+        if (e.key === 'ArrowLeft')  activate(Math.max(idx-1, 0));
+      });
+    });
+
+    // 手机端左右滑动 → 自动高亮对应标签
+    panelsWrap.addEventListener('scroll', onScrollSync, { passive:true });
+
+    // 初始高亮
+    activate(0);
   }
 
-  // 没有议程
-  if (!items.length) {
-    tabsWrap.innerHTML = '';
-    panelsWrap.innerHTML = '';
-    statusEl.textContent = '暂无议程';
-    return;
-  }
-
-  // 渲染标签 + 面板
-  tabsWrap.innerHTML = '';
-  panelsWrap.innerHTML = '';
-  statusEl.textContent = '';
-
-  items.forEach((ag, idx) => {
-    const id = esc(ag.id || String(idx+1));
-    const title = esc(ag.title || `议程 ${idx+1}`);
-    const author = esc(ag.author || '管理员');
-    const deadline = humanDeadline(ag.deadline);
-    const desc = esc(ag.desc || '');
-
-    // 标签
-    const tabBtn = document.createElement('button');
-    tabBtn.className = 'agenda-tab' + (idx === 0 ? ' is-active' : '');
-    tabBtn.role = 'tab';
-    tabBtn.id = `ag-tab-${id}`;
-    tabBtn.setAttribute('aria-selected', idx === 0 ? 'true' : 'false');
-    tabBtn.setAttribute('aria-controls', `ag-panel-${id}`);
-    tabBtn.textContent = ag.tag || title; // 标签显示 tag，没有就用标题
-    tabsWrap.appendChild(tabBtn);
-
-    // 面板
-    const panel = document.createElement('article');
-    panel.className = 'agenda-panel' + (idx === 0 ? ' is-active' : '');
-    panel.id = `ag-panel-${id}`;
-    panel.role = 'tabpanel';
-    panel.setAttribute('aria-labelledby', `ag-tab-${id}`);
-
-    // 详情链接（可选：如果没提供详情页，就用 span）
-    const linkHref = ag.url ? esc(ag.url) : '';
-    const titleHTML = linkHref
-      ? `<a href="${linkHref}" target="_blank" rel="noopener">${title}</a>`
-      : `${title}`;
-
-    panel.innerHTML = `
-      <h3 class="agenda-title">${titleHTML}</h3>
-      <p class="agenda-meta">提交人：${author} · 截止：${deadline}</p>
-      <p>${desc}</p>
-    `;
-
-    panelsWrap.appendChild(panel);
-  });
-
-  // 交互：标签切换 + 滑动同步（和你之前的交互一致）
-  const tabs   = Array.from(tabsWrap.querySelectorAll('.agenda-tab'));
-  const panels = Array.from(panelsWrap.querySelectorAll('.agenda-panel'));
-
+  // 切换激活项
   function activate(i){
-    tabs.forEach((t,idx)=>{
-      const on = idx===i;
+    const tabs   = Array.from(tabsWrap.querySelectorAll('.agenda-tab'));
+    const panels = Array.from(panelsWrap.querySelectorAll('.agenda-panel'));
+
+    tabs.forEach((t, idx) => {
+      const on = idx === i;
       t.classList.toggle('is-active', on);
       t.setAttribute('aria-selected', on ? 'true' : 'false');
-      panels[idx].classList.toggle('is-active', on);
     });
-    // 滚到对应面板（移动端）
-    panels[i].scrollIntoView({ behavior:'smooth', inline:'center', block:'nearest' });
+    panels.forEach((p, idx) => {
+      const on = idx === i;
+      p.classList.toggle('is-active', on);
+      if (on) p.scrollIntoView({ behavior:'smooth', inline:'center', block:'nearest' });
+    });
   }
 
-  tabs.forEach((tab, i)=>{
-    tab.addEventListener('click', ()=> activate(i));
-    tab.addEventListener('keydown', (e)=>{
-      if (e.key==='ArrowRight') activate(Math.min(i+1, tabs.length-1));
-      if (e.key==='ArrowLeft')  activate(Math.max(i-1, 0));
-    });
-  });
-
-  // 滑动时自动高亮标签（手机端）
+  // 滚动同步标签
   let ticking = false;
-  panelsWrap.addEventListener('scroll', ()=>{
+  function onScrollSync(){
     if (ticking) return;
     ticking = true;
-    requestAnimationFrame(()=>{
-      const wrapRect = panelsWrap.getBoundingClientRect();
-      const wrapMidX = wrapRect.left + panelsWrap.clientWidth / 2;
-      let best = 0, bestDist = Infinity;
-      panels.forEach((p,idx)=>{
-        const rect = p.getBoundingClientRect();
-        const mid = rect.left + rect.width/2;
-        const dist = Math.abs(mid - wrapMidX);
-        if (dist < bestDist){ bestDist = dist; best = idx; }
+    requestAnimationFrame(() => {
+      const panels = Array.from(panelsWrap.querySelectorAll('.agenda-panel'));
+      if (!panels.length) { ticking = false; return; }
+      const viewportLeft = panelsWrap.getBoundingClientRect().left;
+      const center = viewportLeft + panelsWrap.clientWidth / 2;
+
+      let best = 0;
+      let bestDist = Infinity;
+      panels.forEach((p, idx) => {
+        const r = p.getBoundingClientRect();
+        const mid = r.left + r.width / 2;
+        const dist = Math.abs(mid - center);
+        if (dist < bestDist) { bestDist = dist; best = idx; }
       });
-      tabs.forEach((t,idx)=>{
-        const on = idx===best;
+
+      // 只更新 tab 的样式，不强制滚动（避免抖动）
+      const tabs = Array.from(tabsWrap.querySelectorAll('.agenda-tab'));
+      tabs.forEach((t, idx) => {
+        const on = idx === best;
         t.classList.toggle('is-active', on);
         t.setAttribute('aria-selected', on ? 'true' : 'false');
-        panels[idx].classList.toggle('is-active', on);
       });
       ticking = false;
     });
-  }, { passive:true });
+  }
+
+  // 拉取数据
+  async function load(){
+    statusEl.textContent = '加载中…';
+    try{
+      const res = await fetch(AGENDA_LIST_ENDPOINT, { headers: { 'Accept': 'application/json' } });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      if (!json.ok) throw new Error('接口返回失败');
+      render(json.items || []);
+    }catch(e){
+      statusEl.textContent = '加载失败，请稍后再试';
+      // 同时清空容器，避免残留
+      tabsWrap.innerHTML = '';
+      panelsWrap.innerHTML = '';
+    }
+  }
+
+  load();
 })();
