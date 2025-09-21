@@ -321,53 +321,59 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// ========== 议程：标签切换 + 左右滑动同步 ========== 
+// 议程
 (function initAgenda(){
-  const tabs = Array.from(document.querySelectorAll('.agenda-tab'));
-  const panels = Array.from(document.querySelectorAll('.agenda-panel'));
+  const tabs     = Array.from(document.querySelectorAll('.agenda-tab'));
+  const panels   = Array.from(document.querySelectorAll('.agenda-panel'));
   const viewport = document.getElementById('agendaPanels');
   if (!tabs.length || !panels.length || !viewport) return;
 
-  function activate(i){
+  // 高亮
+  function setActive(i){
     tabs.forEach((t,idx)=>{
-      const on = idx===i;
+      const on = idx === i;
       t.classList.toggle('is-active', on);
       t.setAttribute('aria-selected', on ? 'true' : 'false');
       panels[idx].classList.toggle('is-active', on);
-      // 滚到相应面板（手机端）
-      if (on) panels[idx].scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
     });
   }
 
+  // 点击标签：高亮 + 滚动
+  function activateByTab(i){
+    setActive(i);
+    panels[i].scrollIntoView({ behavior:'smooth', inline:'center', block:'nearest' });
+  }
+
+  // 绑定标签
   tabs.forEach((tab, i)=>{
-    tab.addEventListener('click', ()=> activate(i));
+    tab.addEventListener('click', ()=> activateByTab(i));
     tab.addEventListener('keydown', (e)=>{
-      if (e.key==='ArrowRight') activate(Math.min(i+1, tabs.length-1));
-      if (e.key==='ArrowLeft')  activate(Math.max(i-1, 0));
+      if (e.key === 'ArrowRight') activateByTab(Math.min(i+1, tabs.length-1));
+      if (e.key === 'ArrowLeft')  activateByTab(Math.max(i-1, 0));
     });
   });
 
-  // 监听滑动，自动高亮对应标签（手机端）
   let ticking = false;
   viewport.addEventListener('scroll', ()=>{
     if (ticking) return;
     ticking = true;
     requestAnimationFrame(()=>{
-      // 找最靠近视口中心的面板
-      const center = viewport.scrollLeft + viewport.clientWidth/2;
+      const vpRect = viewport.getBoundingClientRect();
+      const vpMid  = vpRect.left + vpRect.width / 2;
+
       let best = 0, bestDist = Infinity;
-      panels.forEach((p,idx)=>{
-        const rect = p.getBoundingClientRect();
-        // 相对 viewport 左边界的中心
-        const mid = rect.left + rect.width/2;
-        const dist = Math.abs(mid - (viewport.getBoundingClientRect().left + viewport.clientWidth/2));
-        if (dist < bestDist) { bestDist = dist; best = idx; }
+      panels.forEach((p, idx)=>{
+        const r   = p.getBoundingClientRect();
+        const mid = r.left + r.width / 2;
+        const d   = Math.abs(mid - vpMid);
+        if (d < bestDist){ bestDist = d; best = idx; }
       });
-      activate(best);
+
+      setActive(best);   // 高亮
       ticking = false;
     });
   }, { passive:true });
 
-  // 初始
-  activate(0);
+  // 初始状态
+  setActive(0);
 })();
