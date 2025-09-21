@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>议程详情</title>
+  <meta name="color-scheme" content="dark light" />
+  <link rel="stylesheet" href="../style.css" />
+  <style>
+    .container{max-width:820px;margin:0 auto;padding:1rem}
+    .card{background:#111;border:1px solid #2a2a2a;border-radius:14px;padding:1rem}
+    .title{font-size:1.35rem;margin:.25rem 0 .5rem}
+    .meta{color:#aaa;margin:.25rem 0 1rem}
+    .desc{line-height:1.65;color:#eee;white-space:pre-wrap}
+    .section-title{margin:1.1rem 0 .5rem;color:#ffdd57}
+    .options{display:flex;flex-direction:column;gap:.5rem;margin:.5rem 0 1rem}
+    .actions{display:flex;gap:.75rem;align-items:center;margin-top:.5rem;flex-wrap:wrap}
+    .btn{appearance:none;border:0;border-radius:10px;padding:.7rem 1.1rem;cursor:pointer;background:#2b68ff;color:#fff;font-weight:700}
+    .btn:hover{background:#1f55d8}
+    .muted{color:#a9a9a9}
+    .msg{margin-top:.5rem}
+    .msg--ok{color:#4caf50}
+    .msg--err{color:#ff6464}
+    textarea{width:100%;min-height:120px;border:1px solid #3a3a3a;border-radius:10px;background:#0e0e0e;color:#fff;padding:.7rem}
+    .back{display:inline-block;margin:.5rem 0 1rem;color:#ddd;text-decoration:underline}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html#agenda">← 返回议程</a>
+
+    <div class="card" id="wrap">
+      <h1 class="title" id="agTitle">加载中…</h1>
+      <p class="meta" id="agMeta"></p>
+      <div class="desc" id="agDesc"></div>
+
+      <!-- 投票区 -->
+      <div id="voteBox" hidden>
+        <h3 class="section-title">投票</h3>
+        <form id="voteForm" class="options"></form>
+        <div class="actions">
+          <button class="btn" id="voteSubmit">提交投票</button>
+          <span class="muted">每人限投一票</span>
+        </div>
+        <div id="voteMsg" class="msg"></div>
+      </div>
+
+      <!-- 问答区 -->
+      <div id="qaBox" hidden>
+        <h3 class="section-title">发表看法</h3>
+        <textarea id="qaText" placeholder="请输入你对该议题的观点（最多4000字）"></textarea>
+        <div class="actions">
+          <button class="btn" id="qaSubmit">提交</button>
+          <span class="muted">理性发言，友善讨论</span>
+        </div>
+        <div id="qaMsg" class="msg"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./detail.js" defer></script>
+</body>
+</html>
