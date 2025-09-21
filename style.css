@@ -543,57 +543,52 @@ dialog.modal[open] {
   transition: transform .3s ease;
 }
 
-/* ===== Agenda（议程） ===== */
-.agenda{
-  position: relative;
+/* ========== 议程：标签 + 滑动面板 ========== */
+.agenda-tabs{
   display:flex;
-  align-items:center;
   gap:.5rem;
-  margin-top:.75rem;
+  overflow-x:auto;
+  padding:.25rem;
+  margin:.5rem 0 1rem;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;
 }
-
-.agenda__nav{
-  appearance:none;border:1px solid var(--line);background:#151515;color:#eee;
-  width:40px;height:40px;border-radius:10px;cursor:pointer;font-size:1.25rem;
+.agenda-tab{
+  flex:0 0 auto;
+  padding:.45rem .9rem;
+  border:1px solid var(--line, #2a2a2a);
+  background:#141414;
+  color:#ddd;
+  border-radius:999px;
+  cursor:pointer;
+  font-weight:600;
 }
-.agenda__nav:hover{background:#1f1f1f}
-.agenda__nav[disabled]{opacity:.5;cursor:not-allowed}
+.agenda-tab:is(:hover,:focus-visible){ outline:none; border-color:#3d3d3d; }
+.agenda-tab.is-active{ color:var(--accent,#ffdd57); background:#1b1b1b; border-color:#444; }
 
-.agenda__viewport{
-  position: relative;
-  flex: 1;
-  height: 220px;                /* 卡片展示高度 */
-  overflow: visible;            /* 允许堆叠部分露出 */
+.agenda-panels{
+  display:flex;
+  gap:1rem;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
+  padding-bottom:.25rem;
 }
-
-.agenda__stack{
-  position:absolute; inset:0;
-  display:grid; place-items:center;  /* 顶层卡片居中 */
-}
-
-/* 单张卡片的基础样式 */
-.agenda__card{
-  position:absolute;
-  width:min(680px, 100%);
-  background:#1b1b1b;
-  border:1px solid var(--line);
+.agenda-panel{
+  scroll-snap-align:center;
+  flex:0 0 100%;
+  max-width:800px;              /* 防止桌面铺太宽 */
+  background:#111;
+  border:1px solid var(--line,#2a2a2a);
   border-radius:14px;
-  padding:1rem 1rem 1.1rem;
-  box-shadow:0 10px 30px rgba(0,0,0,.35);
-  transition: transform .35s ease, opacity .35s ease, filter .35s ease;
-  will-change: transform, opacity;
-  cursor: pointer;
+  padding:1rem 1.2rem;
+  box-shadow:0 4px 16px rgba(0,0,0,.25);
+}
+@media (min-width: 900px){
+  .agenda-panels{ overflow:visible; }
+  .agenda-panel{ flex:1 1 auto; }
 }
 
-/* 卡片里的文字 */
-.agenda__title{ margin:0 0 .35rem; font-size:1.05rem }
-.agenda__title a{ color:#fff; text-decoration:none }
-.agenda__title a:hover{ text-decoration:underline }
-.agenda__meta{ margin:.15rem 0 .4rem; color:var(--muted); font-size:.9rem }
-.agenda__desc{ margin:0; color:#ddd; font-size:.95rem; line-height:1.55 }
-
-/* 小屏也能看，视口缩进一点 */
-@media (max-width: 520px){
-  .agenda__viewport{ height: 260px; }
-  .agenda__card{ width: calc(100% - 1rem); }
-}
+.agenda-title{ margin:.2rem 0 .25rem; font-size:1.2rem; }
+.agenda-title a{ color:#fff; text-decoration:underline; }
+.agenda-meta{ color:var(--muted,#aaa); margin:.25rem 0 .75rem; }
