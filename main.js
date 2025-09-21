@@ -369,7 +369,7 @@ document.addEventListener('DOMContentLoaded', () => {
       art.id = idPanel;
       art.setAttribute('role','tabpanel');
       art.setAttribute('aria-labelledby', idTab);
-
+      
       // 友好显示截止日期
       let deadlineLine = '';
       if (it.deadline && Number(it.deadline)) {
@@ -382,16 +382,19 @@ document.addEventListener('DOMContentLoaded', () => {
           deadlineLine = ` · 截止：${mm}/${dd} ${hh}:${mi}`;
         }
       }
-
-      // 可选跳转链接（你在创建议程时有传 url 字段的话优先使用）
-      const href = (it.url && typeof it.url === 'string') ? it.url : `agenda/detail.html?id=${encodeURIComponent(it.id)}`;
-
+      
+      // 可选跳转链接
+      const href = (it.url && typeof it.url === 'string')
+        ? it.url
+        : `agenda/detail.html?id=${encodeURIComponent(it.id)}`;
+      
       art.innerHTML = `
         <h3 class="agenda-title">
           <a href="${esc(href)}" target="_blank" rel="noopener">${esc(it.title || '未命名议程')}</a>
         </h3>
         <p class="agenda-meta">提交人：${esc(it.author || '管理员')}${deadlineLine}</p>
-        <p>${esc(it.desc || '')}</p>
+        <!-- 关键：简介使用 .agenda-desc，桌面端会被 line-clamp 成 … -->
+        <p class="agenda-desc">${esc(it.desc || '')}</p>
       `;
       panelsWrap.appendChild(art);
 
