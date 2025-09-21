@@ -321,76 +321,53 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// ===== 议程轮播（叠放 + 部分可见 + 左右切换） =====
-(function agendaCarousel(){
-  const stackEl = document.getElementById('agendaStack');
-  const prevBtn = document.getElementById('agendaPrev');
-  const nextBtn = document.getElementById('agendaNext');
-  if (!stackEl || !prevBtn || !nextBtn) return;
+// ========== 议程：标签切换 + 左右滑动同步 ========== 
+(function initAgenda(){
+  const tabs = Array.from(document.querySelectorAll('.agenda-tab'));
+  const panels = Array.from(document.querySelectorAll('.agenda-panel'));
+  const viewport = document.getElementById('agendaPanels');
+  if (!tabs.length || !panels.length || !viewport) return;
 
-  const cards = Array.from(stackEl.querySelectorAll('.agenda__card'));
-  let index = 0; // 顶层卡片索引
-
-  // 叠放布局：顶层置中，其余按层级下沉 & 缩放 & 下移 & 淡化
-  function layout(){
-    const DEPTH = 3;         // 最多渲染多少层的下沉效果
-    const dx = 0;            // 水平偏移（可调）
-    const dy = 22;           // 每层向下偏移像素
-    const scaleStep = 0.06;  // 每层缩小
-    const blurStep = 0.1;    // 每层加轻微模糊（可选）
-
-    cards.forEach((card, i) => {
-      const rel = i - index; // 相对顶层的层级差
-      if (rel < 0) {
-        // 在左侧（已经翻过去的）——往后放到队尾视觉
-        const k = Math.min(DEPTH, Math.abs(rel));
-        card.style.zIndex = String(100 - k);
-        card.style.opacity = 0.25;
-        card.style.filter = `blur(${k*blurStep}px)`;
-        card.style.transform = `translate(${dx - 60}px, ${k*dy}px) scale(${1 - k*scaleStep - 0.04}) rotate(-1deg)`;
-      } else {
-        // 顶层 + 右侧等待的
-        const k = Math.min(DEPTH, rel);
-        const opacity = rel === 0 ? 1 : 0.6 - k*0.12;
-        card.style.zIndex = String(200 - k);
-        card.style.opacity = Math.max(opacity, 0.2);
-        card.style.filter = `blur(${k*blurStep}px)`;
-        const shiftX = rel === 0 ? 0 : 40; // 右侧露出一点
-        card.style.transform = `translate(${dx + k*shiftX}px, ${k*dy}px) scale(${1 - k*scaleStep})`;
-      }
+  function activate(i){
+    tabs.forEach((t,idx)=>{
+      const on = idx===i;
+      t.classList.toggle('is-active', on);
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      panels[idx].classList.toggle('is-active', on);
+      // 滚到相应面板（手机端）
+      if (on) panels[idx].scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
     });
-
-    // 控制按钮可点击状态
-    prevBtn.disabled = (index <= 0);
-    nextBtn.disabled = (index >= cards.length - 1);
   }
 
-  // 点击卡片任意处也能打开（与标题链接一致）
-  cards.forEach(card => {
-    card.addEventListener('click', (e) => {
-      // 避免重复打开：若点的是 <a> 本身交给默认行为
-      if (e.target && e.target.closest('a')) return;
-      const url = card.getAttribute('data-url');
-      if (url) window.open(url, '_blank', 'noopener');
+  tabs.forEach((tab, i)=>{
+    tab.addEventListener('click', ()=> activate(i));
+    tab.addEventListener('keydown', (e)=>{
+      if (e.key==='ArrowRight') activate(Math.min(i+1, tabs.length-1));
+      if (e.key==='ArrowLeft')  activate(Math.max(i-1, 0));
     });
   });
 
-  prevBtn.addEventListener('click', () => {
-    if (index > 0) { index--; layout(); }
-  });
-  nextBtn.addEventListener('click', () => {
-    if (index < cards.length - 1) { index++; layout(); }
-  });
+  // 监听滑动，自动高亮对应标签（手机端）
+  let ticking = false;
+  viewport.addEventListener('scroll', ()=>{
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(()=>{
+      // 找最靠近视口中心的面板
+      const center = viewport.scrollLeft + viewport.clientWidth/2;
+      let best = 0, bestDist = Infinity;
+      panels.forEach((p,idx)=>{
+        const rect = p.getBoundingClientRect();
+        // 相对 viewport 左边界的中心
+        const mid = rect.left + rect.width/2;
+        const dist = Math.abs(mid - (viewport.getBoundingClientRect().left + viewport.clientWidth/2));
+        if (dist < bestDist) { bestDist = dist; best = idx; }
+      });
+      activate(best);
+      ticking = false;
+    });
+  }, { passive:true });
 
-  // 键盘支持（左右键切换）
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowLeft') prevBtn.click();
-    if (e.key === 'ArrowRight') nextBtn.click();
-  });
-
-  // 初始布局
-  layout();
-
-  // 窗口大小变化时微调（可选）
-  window.addEventListener('resize', () => layout());
+  // 初始
+  activate(0);
 })();
