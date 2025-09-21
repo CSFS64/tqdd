@@ -207,16 +207,23 @@
   const tokenInput = $('#token');
   const saved = localStorage.getItem('ADMIN_TOKEN') || qs.get('token') || '';
   if (saved) tokenInput.value = saved;
+
+  // 保存口令 → 保存后自动刷新当前页签
   $('#saveToken').addEventListener('click', ()=>{
     localStorage.setItem('ADMIN_TOKEN', tokenInput.value.trim());
     alert('口令已保存到本地浏览器');
+    // 保存后刷新当前可见页签
+    if (!panelRoom.hidden)      loadRoommate();
+    else if (!panelRecr.hidden) loadRecruit();
+    else                        loadAgenda();
   });
+
   const authHeaders = () => {
     const t = (tokenInput.value || '').trim();
     return t ? { 'X-Admin-Token': t } : {};
   };
   const humanTime = (ts)=>{
-    try{ const d=new Date(ts); return isNaN(d)?'':d.toLocaleString(); }catch{ return '';}
+    try{ const d=new Date(ts); return isNaN(d)?'':d.toLocaleString(); }catch{ return ''; }
   };
   const esc = s => String(s||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
 
@@ -228,6 +235,7 @@
   const panelRecr = $('#panel-recruit');
   const panelAg   = $('#panel-agenda');
 
+  // 切换页签即刷新对应数据
   function selectTab(which){
     const map = {room:[true,false,false], recruit:[false,true,false], agenda:[false,false,true]};
     const [r1,r2,r3] = map[which] || [true,false,false];
@@ -235,6 +243,10 @@
     tabRecr.setAttribute('aria-selected', r2?'true':'false');
     tabAg.setAttribute('aria-selected',   r3?'true':'false');
     panelRoom.hidden = !r1; panelRecr.hidden = !r2; panelAg.hidden = !r3;
+
+    if (r1)      loadRoommate();
+    else if (r2) loadRecruit();
+    else         loadAgenda();
   }
   tabRoom.addEventListener('click', ()=>selectTab('room'));
   tabRecr.addEventListener('click', ()=>selectTab('recruit'));
@@ -403,6 +415,7 @@
       // 清空表单
       $('#agTitle').value = ''; $('#agAuthor').value=''; $('#agDeadline').value='';
       $('#agDesc').value=''; $('#agTags').value=''; $('#agOptions').value='';
+      // 刷新列表
       await loadAgenda();
       alert('创建成功');
     }catch{ alert('网络错误，创建失败'); }
@@ -438,13 +451,12 @@
       body.insertAdjacentHTML('beforeend', `<div><strong>${esc(json.item?.title || '议程')}</strong></div>`);
       if (json.item?.type === 'vote'){
         const list = Array.isArray(json.results) ? json.results : [];
-        // results: [{option:'同意', count: 12}, ...]
         body.insertAdjacentHTML('beforeend', `<div class="muted">类型：投票</div>`);
         const rows = list.map(r=>`<tr><td>${esc(r.option)}</td><td>${esc(r.count)}</td></tr>`).join('');
         body.insertAdjacentHTML('beforeend', `<table class="table"><thead><tr><th>选项</th><th>票数</th></tr></thead><tbody>${rows || `<tr><td colspan="2" class="muted">暂无数据</td></tr>`}</tbody></table>`);
       }else{
         body.insertAdjacentHTML('beforeend', `<div class="muted">类型：问答</div>`);
-        const answers = Array.isArray(json.results) ? json.results : []; // [{text:'……', ts: 173..., user:'xxx'}]
+        const answers = Array.isArray(json.results) ? json.results : [];
         if (!answers.length){
           body.insertAdjacentHTML('beforeend', `<div class="muted">暂无回答</div>`);
         }else{
@@ -458,9 +470,8 @@
     }
   }
 
-  // 初始：默认同居匹配
+  // 初始：切到“同居匹配”并自动加载
   selectTab('room');
-  loadRoommate();
 </script>
 </body>
 </html>
