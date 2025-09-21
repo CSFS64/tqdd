@@ -83,35 +83,46 @@
     <section id="agenda" class="section">
       <div class="container">
         <h2>议程（投票 / 讨论）</h2>
-        <p class="muted">当前需要投票或讨论的事务（左右切换查看）。</p>
+        <p class="muted">当前需要投票或讨论的事务（点击标签或左右滑动查看）。</p>
     
-        <div class="agenda">
-          <button class="agenda__nav agenda__nav--prev" aria-label="上一条" id="agendaPrev">‹</button>
+        <div class="agenda-tabs" role="tablist" aria-label="议程主题">
+          <!-- 标签（可横向滚动） -->
+          <button class="agenda-tab is-active" role="tab" aria-selected="true" aria-controls="ag-panel-1" id="ag-tab-1">
+            巡逻时间统一
+          </button>
+          <button class="agenda-tab" role="tab" aria-selected="false" aria-controls="ag-panel-2" id="ag-tab-2">
+            基金收支透明
+          </button>
+          <button class="agenda-tab" role="tab" aria-selected="false" aria-controls="ag-panel-3" id="ag-tab-3">
+            PVE 新人帮扶
+          </button>
+        </div>
     
-          <div class="agenda__viewport" aria-live="polite">
-            <!-- 这些卡片可以用 JS 动态渲染，这里先写几条示例 -->
-            <div class="agenda__stack" id="agendaStack">
-              <article class="agenda__card" data-url="agenda/detail-1.html">
-                <h3 class="agenda__title"><a href="agenda/detail-1.html" target="_blank" rel="noopener">是否将巡逻时间统一至 20:00？</a></h3>
-                <p class="agenda__meta">提交人：管理员 · 截止：09/30 23:59</p>
-                <p class="agenda__desc">为方便活动组织，提议将每日营地巡逻统一时间设为 20:00（北京时间）。</p>
-              </article>
+        <!-- 面板区：手机端可左右滑动（scroll-snap） -->
+        <div class="agenda-panels" id="agendaPanels" aria-live="polite">
+          <article class="agenda-panel is-active" id="ag-panel-1" role="tabpanel" aria-labelledby="ag-tab-1">
+            <h3 class="agenda-title">
+              <a href="agenda/detail-1.html" target="_blank" rel="noopener">是否将巡逻时间统一至 20:00？</a>
+            </h3>
+            <p class="agenda-meta">提交人：管理员 · 截止：09/30 23:59</p>
+            <p>为方便活动组织，提议将每日营地巡逻统一时间设为 20:00（北京时间）。</p>
+          </article>
     
-              <article class="agenda__card" data-url="agenda/detail-2.html">
-                <h3 class="agenda__title"><a href="agenda/detail-2.html" target="_blank" rel="noopener">营地建筑基金的收支透明化</a></h3>
-                <p class="agenda__meta">提交人：财务官 · 截止：10/02 18:00</p>
-                <p class="agenda__desc">每周发布一次建材/金条预算与实际支出报表，是否同意此流程？</p>
-              </article>
+          <article class="agenda-panel" id="ag-panel-2" role="tabpanel" aria-labelledby="ag-tab-2">
+            <h3 class="agenda-title">
+              <a href="agenda/detail-2.html" target="_blank" rel="noopener">营地建筑基金的收支透明化</a>
+            </h3>
+            <p class="agenda-meta">提交人：财务官 · 截止：10/02 18:00</p>
+            <p>每周发布一次建材/金条预算与实际支出报表，是否同意此流程？</p>
+          </article>
     
-              <article class="agenda__card" data-url="agenda/detail-3.html">
-                <h3 class="agenda__title"><a href="agenda/detail-3.html" target="_blank" rel="noopener">PVE 新人帮扶清单</a></h3>
-                <p class="agenda__meta">提交人：活动官 · 截止：10/05 20:00</p>
-                <p class="agenda__desc">建立固定新区帮助清单（武器/护甲/拍卖出价参考），是否同意？</p>
-              </article>
-            </div>
-          </div>
-    
-          <button class="agenda__nav agenda__nav--next" aria-label="下一条" id="agendaNext">›</button>
+          <article class="agenda-panel" id="ag-panel-3" role="tabpanel" aria-labelledby="ag-tab-3">
+            <h3 class="agenda-title">
+              <a href="agenda/detail-3.html" target="_blank" rel="noopener">PVE 新人帮扶清单</a>
+            </h3>
+            <p class="agenda-meta">提交人：活动官 · 截止：10/05 20:00</p>
+            <p>建立固定新区帮助清单（武器/护甲/拍卖出价参考），是否同意？</p>
+          </article>
         </div>
       </div>
     </section>
