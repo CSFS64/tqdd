@@ -615,7 +615,7 @@ dialog.modal[open] {
     overflow: hidden;               /* 桌面不显示横向滚动条 */
   }
   .agenda-panel{
-    height: 230px;                  /* 你想要的统一高度 */
+    height: 200px;                  /* 你想要的统一高度 */
     display:flex;
     flex-direction: column;
   }
