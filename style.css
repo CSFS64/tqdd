@@ -594,6 +594,15 @@ dialog.modal[open] {
   padding:1rem 1.2rem;
   box-shadow:0 4px 16px rgba(0,0,0,.25);
 }
+
+.agenda-panel .agenda-desc{
+    margin-top:.25rem;
+    display:-webkit-box !important;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;          /* 限制行数！！！！！！！ */
+    overflow: hidden;
+    line-height: 1.6;
+    max-height: calc(1.6em * 5);
 @media (min-width: 900px){
   .agenda-panels{ overflow:visible; }
   .agenda-panel{ flex:1 1 auto; }
@@ -621,14 +630,5 @@ dialog.modal[open] {
   }
   .agenda-title{ margin:.2rem 0 .25rem; }
   .agenda-meta { margin:.25rem 0 .5rem; }
-
-  .agenda-panel .agenda-desc{
-    margin-top:.25rem;
-    display:-webkit-box !important;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 4;          /* 限制行数！！！！！！！ */
-    overflow: hidden;
-    line-height: 1.6;
-    max-height: calc(1.6em * 5);
   }
 }
