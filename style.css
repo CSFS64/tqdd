@@ -607,37 +607,28 @@ dialog.modal[open] {
 
 /* ===== 桌面卡片补丁 ===== */
 @media (min-width: 900px){
-  /* 面板容器：仍然支持横向滑动，超出 3 张时可左右拖动 */
+  /* 三列等宽，卡片等高 */
   .agenda-panels{
-    display:flex;
-    gap:1rem;                      /* 3 张卡片之间的间距 */
-    overflow-x:auto;               /* 保留横向滚动 */
-    scroll-snap-type:x mandatory;  /* 滚动时按卡片对齐 */
-    -webkit-overflow-scrolling:touch;
-    padding-bottom:.5rem;
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    overflow: hidden;               /* 桌面不显示横向滚动条 */
   }
-
-  /* 单张卡片：固定3张，等高 */
   .agenda-panel{
-    flex:0 0 calc((100% - 2rem) / 3);
-    max-width:none;
-    scroll-snap-align:start;
-    height: 260px;
+    height: 260px;                  /* 你想要的统一高度 */
     display:flex;
-    flex-direction:column;
+    flex-direction: column;
   }
+  .agenda-title{ margin:.2rem 0 .25rem; }
+  .agenda-meta { margin:.25rem 0 .5rem; }
 
-  /* 标题 */
-  .agenda-title{ margin:.2rem 0 .2rem; }
-  .agenda-meta{ color:var(--muted,#aaa); margin:.1rem 0 .4rem; }
-
-  /* 正文多行省略 */
-  .agenda-desc{
+  .agenda-panel .agenda-desc{
     margin-top:.25rem;
-    overflow:hidden;
-    display:-webkit-box;
+    display:-webkit-box !important;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
-            line-clamp: 5;
+    -webkit-line-clamp: 4;          /* 限制行数！！！！！！！ */
+    overflow: hidden;
+    line-height: 1.6;
+    max-height: calc(1.6em * 5);
   }
 }
