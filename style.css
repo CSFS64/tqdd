@@ -595,24 +595,20 @@ dialog.modal[open] {
   box-shadow:0 4px 16px rgba(0,0,0,.25);
 }
 
+/* 简介：所有设备限制 4 行，多余用 … */
 .agenda-panel .agenda-desc{
-    margin-top:.25rem;
-    display:-webkit-box !important;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 4;          /* 限制行数！！！！！！！ */
-    overflow: hidden;
-    line-height: 1.6;
-    max-height: calc(1.6em * 5);
-@media (min-width: 900px){
-  .agenda-panels{ overflow:visible; }
-  .agenda-panel{ flex:1 1 auto; }
+  margin-top:.25rem;
+  display:-webkit-box !important;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+  line-height: 1.6;
+  max-height: calc(1.6em * 4);
 }
 
 .agenda-title{ margin:.2rem 0 .25rem; font-size:1.2rem; }
 .agenda-title a{ color:#fff; text-decoration:underline; }
 .agenda-meta{ color:var(--muted,#aaa); margin:.25rem 0 .75rem; }
-
-/* 保持你已有的移动端样式 … */
 
 /* ===== 桌面卡片补丁 ===== */
 @media (min-width: 900px){
@@ -621,14 +617,13 @@ dialog.modal[open] {
     display:grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
-    overflow: hidden;               /* 桌面不显示横向滚动条 */
+    overflow: hidden; /* 桌面不显示横向滚动条 */
   }
   .agenda-panel{
-    height: 200px;                  /* 你想要的统一高度 */
+    height: 200px; /* 统一高度 */
     display:flex;
     flex-direction: column;
   }
   .agenda-title{ margin:.2rem 0 .25rem; }
   .agenda-meta { margin:.25rem 0 .5rem; }
-  }
 }
