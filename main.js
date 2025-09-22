@@ -331,11 +331,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (!tabsWrap || !panelsWrap) return;
 
-  // 工具：安全文本
+  // 小工具
   const esc = (s) => String(s ?? '')
     .replaceAll('&','&amp;').replaceAll('<','&lt;')
     .replaceAll('>','&gt;').replaceAll('"','&quot;')
     .replaceAll("'","&#39;");
+  const isMobile = () => window.matchMedia('(max-width: 900px)').matches;
 
   // 渲染：标签 + 面板
   function render(items){
@@ -369,8 +370,8 @@ document.addEventListener('DOMContentLoaded', () => {
       art.id = idPanel;
       art.setAttribute('role','tabpanel');
       art.setAttribute('aria-labelledby', idTab);
-      
-      // 友好显示截止日期
+
+      // 截止日期
       let deadlineLine = '';
       if (it.deadline && Number(it.deadline)) {
         const d = new Date(Number(it.deadline));
@@ -382,23 +383,22 @@ document.addEventListener('DOMContentLoaded', () => {
           deadlineLine = ` · 截止：${mm}/${dd} ${hh}:${mi}`;
         }
       }
-      
-      // 可选跳转链接
+
+      // 跳转链接
       const href = (it.url && typeof it.url === 'string')
         ? it.url
         : `agenda/detail.html?id=${encodeURIComponent(it.id)}`;
-      
+
       art.innerHTML = `
         <h3 class="agenda-title">
           <a href="${esc(href)}" target="_blank" rel="noopener">${esc(it.title || '未命名议程')}</a>
         </h3>
         <p class="agenda-meta">提交人：${esc(it.author || '管理员')}${deadlineLine}</p>
-        <!-- 关键：简介使用 .agenda-desc，桌面端会被 line-clamp 成 … -->
         <p class="agenda-desc">${esc(it.desc || '')}</p>
       `;
       panelsWrap.appendChild(art);
 
-      // 事件绑定
+      // 事件
       btn.addEventListener('click', () => activate(idx));
       btn.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowRight') activate(Math.min(idx+1, items.length-1));
@@ -406,15 +406,17 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    // 手机端左右滑动 → 自动高亮对应标签
-    panelsWrap.addEventListener('scroll', onScrollSync, { passive:true });
+    // 仅手机端监听横向滚动以同步标签
+    if (isMobile()) {
+      panelsWrap.addEventListener('scroll', onScrollSync, { passive:true });
+    }
 
-    // 初始高亮
-    activate(0);
+    // 初始激活：silent 避免首屏被纵向滚动
+    activate(0, { silent: true });
   }
 
-  // 切换激活项
-  function activate(i){
+  // 切换激活项；opts.silent=true 时不滚动容器（用于首次激活）
+  function activate(i, opts = {}){
     const tabs   = Array.from(tabsWrap.querySelectorAll('.agenda-tab'));
     const panels = Array.from(panelsWrap.querySelectorAll('.agenda-panel'));
 
@@ -424,13 +426,20 @@ document.addEventListener('DOMContentLoaded', () => {
       t.setAttribute('aria-selected', on ? 'true' : 'false');
     });
     panels.forEach((p, idx) => {
-      const on = idx === i;
-      p.classList.toggle('is-active', on);
-      if (on) p.scrollIntoView({ behavior:'smooth', inline:'center', block:'nearest' });
+      p.classList.toggle('is-active', idx === i);
     });
+
+    // 只在小屏里做横向滚动；自己计算 scrollLeft，避免 scrollIntoView 影响纵向
+    if (!opts.silent && isMobile()){
+      const panel = panels[i];
+      if (panel) {
+        const left = panel.offsetLeft - panelsWrap.offsetLeft;
+        panelsWrap.scrollTo({ left, behavior:'smooth' });
+      }
+    }
   }
 
-  // 滚动同步标签
+  // 横向滚动时同步高亮标签（仅手机端用）
   let ticking = false;
   function onScrollSync(){
     if (ticking) return;
@@ -438,11 +447,11 @@ document.addEventListener('DOMContentLoaded', () => {
     requestAnimationFrame(() => {
       const panels = Array.from(panelsWrap.querySelectorAll('.agenda-panel'));
       if (!panels.length) { ticking = false; return; }
+
       const viewportLeft = panelsWrap.getBoundingClientRect().left;
       const center = viewportLeft + panelsWrap.clientWidth / 2;
 
-      let best = 0;
-      let bestDist = Infinity;
+      let best = 0, bestDist = Infinity;
       panels.forEach((p, idx) => {
         const r = p.getBoundingClientRect();
         const mid = r.left + r.width / 2;
@@ -450,7 +459,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (dist < bestDist) { bestDist = dist; best = idx; }
       });
 
-      // 只更新 tab 的样式，不强制滚动（避免抖动）
       const tabs = Array.from(tabsWrap.querySelectorAll('.agenda-tab'));
       tabs.forEach((t, idx) => {
         const on = idx === best;
@@ -472,7 +480,6 @@ document.addEventListener('DOMContentLoaded', () => {
       render(json.items || []);
     }catch(e){
       statusEl.textContent = '加载失败，请稍后再试';
-      // 同时清空容器，避免残留
       tabsWrap.innerHTML = '';
       panelsWrap.innerHTML = '';
     }
